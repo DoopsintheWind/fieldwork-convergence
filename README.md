@@ -1,6 +1,6 @@
 # Fieldwork
 
-A six-minute interactive demo compressing three qualitative methods teaching tools from PLS511 at Nazarbayev University into one public walk-through.
+A six-minute interactive demo compressing three teaching tools from a graduate qualitative methods class at Nazarbayev University into one public walk-through.
 
 **Live demo:** https://doopsinthewind.github.io/fieldwork-convergence/demo/
 
