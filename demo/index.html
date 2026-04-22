@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fieldwork: A Qualitative Methods Demo</title>
+<meta name="description" content="A 6-minute interactive demo of a graduate qualitative methods exam. Choose, code, face the ripple. See where real students landed.">
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f5f0e8;
+  --text: #3d3929;
+  --text-bright: #1a1710;
+  --text-dim: #8a8070;
+  --surface: #ece5d8;
+  --surface-2: #e3dbd0;
+  --border: #cfc4b0;
+  --kaia-primary: #f0a830;
+  --deep-primary: #1a3a5c;
+  --deep-accent: #2dd4bf;
+  --root-primary: #059669;
+  --beaver-primary: #8B6914;
+  --frontier-primary: #3d3929;
+  --frontier-glow: rgba(61, 57, 41, 0.15);
+}
+
+html, body {
+  min-height: 100%;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+body.kaia { --frontier-primary: var(--kaia-primary); --frontier-glow: rgba(240,168,48,0.15); }
+body.deep_speakers { --frontier-primary: var(--deep-primary); --frontier-glow: rgba(45,212,191,0.18); }
+body.root { --frontier-primary: var(--root-primary); --frontier-glow: rgba(5,150,105,0.15); }
+body.beaver { --frontier-primary: var(--beaver-primary); --frontier-glow: rgba(139,105,20,0.15); }
+
+/* starfield bg */
+.bg {
+  position: fixed; inset: 0;
+  z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at 15% 20%, var(--frontier-glow) 0, transparent 40%),
+    radial-gradient(circle at 85% 80%, var(--frontier-glow) 0, transparent 40%);
+  transition: background 1s ease;
+}
+
+/* header */
+.header {
+  position: fixed; top: 0; left: 0; right: 0;
+  background: rgba(245,240,232,0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+}
+.header-inner {
+  max-width: 860px; margin: 0 auto;
+  padding: 10px 24px;
+  display: flex; align-items: center; gap: 16px;
+  font-size: 13px; color: var(--text-dim);
+}
+.progress {
+  flex: 1;
+  height: 4px;
+  background: var(--surface-2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-bar {
+  height: 100%;
+  background: var(--frontier-primary);
+  width: 0%;
+  transition: width 0.6s ease;
+}
+.ticker {
+  min-height: 18px;
+  font-style: italic;
+  color: var(--text-dim);
+  font-size: 12px;
+  font-family: "SF Mono", Menlo, monospace;
+  letter-spacing: 0.02em;
+}
+
+/* layout */
+.wrap {
+  position: relative; z-index: 1;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 80px 24px 60px;
+}
+.screen { display: none; animation: fade 0.5s ease; }
+.screen.active { display: block; }
+@keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+h1 { font-size: 32px; line-height: 1.2; margin-bottom: 16px; color: var(--text-bright); font-weight: 500; letter-spacing: -0.01em; }
+h2 { font-size: 22px; line-height: 1.3; margin-bottom: 14px; color: var(--text-bright); font-weight: 500; }
+h3 { font-size: 15px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--frontier-primary); margin-bottom: 10px; font-weight: 600; }
+p { margin-bottom: 14px; font-size: 17px; }
+.lede { font-size: 19px; color: var(--text-bright); }
+.dim { color: var(--text-dim); font-size: 14px; }
+.mono { font-family: "SF Mono", Menlo, monospace; font-size: 13px; }
+
+/* cards */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 22px 24px;
+  margin-bottom: 18px;
+}
+.card-accent {
+  border-left: 3px solid var(--frontier-primary);
+}
+.scene-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 28px;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--text-bright);
+  position: relative;
+  margin: 20px 0;
+}
+.scene-card::before {
+  content: "FIELD RECORD 04/22";
+  position: absolute; top: -10px; left: 20px;
+  background: var(--bg);
+  padding: 0 10px;
+  font-family: "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+}
+
+/* inputs & buttons */
+.input {
+  width: 100%;
+  padding: 14px 16px;
+  font-family: inherit;
+  font-size: 17px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text-bright);
+}
+.input:focus { outline: 2px solid var(--frontier-primary); outline-offset: 2px; }
+.btn {
+  display: inline-block;
+  padding: 12px 24px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  background: var(--text-bright);
+  color: var(--bg);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.btn:hover { opacity: 0.88; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-ghost {
+  background: transparent;
+  color: var(--text-bright);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { background: var(--surface); opacity: 1; }
+.btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+
+/* choice buttons */
+.choice {
+  display: block; width: 100%;
+  padding: 16px 20px;
+  margin-bottom: 10px;
+  text-align: left;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 16px;
+  color: var(--text-bright);
+  transition: border-color 0.2s, background 0.2s;
+}
+.choice:hover { border-color: var(--frontier-primary); background: var(--surface-2); }
+.choice.selected { border-color: var(--frontier-primary); border-width: 2px; background: var(--surface-2); padding: 15px 19px; }
+.choice-label { font-weight: 600; margin-bottom: 4px; color: var(--text-bright); }
+.choice-note { font-size: 14px; color: var(--text-dim); }
+
+/* code tags */
+.tag-pool {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  padding: 18px;
+  background: var(--surface);
+  border-radius: 8px;
+  min-height: 60px;
+  margin-bottom: 14px;
+}
+.tag {
+  padding: 6px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 13px;
+  font-family: "SF Mono", Menlo, monospace;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+.tag:hover { border-color: var(--frontier-primary); }
+.tag.picked { background: var(--frontier-primary); color: var(--bg); border-color: var(--frontier-primary); }
+.tag-match { background: #d4e8d0; border-color: #6b8c5f; color: #2d3f22; }
+.tag-clash { background: #f0d4c8; border-color: #a0604a; color: #4a1e10; }
+
+/* comparison split */
+.split {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  margin: 16px 0;
+}
+.split-col { background: var(--surface); border-radius: 8px; padding: 18px; border: 1px solid var(--border); }
+.split-col h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 10px; }
+@media (max-width: 560px) { .split { grid-template-columns: 1fr; } }
+
+/* aggregate bars */
+.agg {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 22px;
+  margin: 18px 0;
+}
+.agg h3 { margin-bottom: 16px; }
+.agg-row {
+  display: grid; grid-template-columns: auto 1fr auto;
+  align-items: center; gap: 12px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+.agg-count { font-weight: 600; color: var(--text-bright); min-width: 48px; }
+.agg-bar {
+  height: 18px; background: var(--surface-2); border-radius: 4px; overflow: hidden;
+}
+.agg-fill {
+  height: 100%; background: var(--text-dim); border-radius: 4px;
+  transition: width 0.8s ease;
+}
+.agg-row.you .agg-fill { background: var(--frontier-primary); }
+.agg-row.you .agg-count { color: var(--frontier-primary); }
+.agg-label { font-size: 14px; color: var(--text); }
+.agg-row.you .agg-label { font-weight: 600; color: var(--text-bright); }
+
+/* footer */
+.footer {
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 13px;
+  text-align: center;
+}
+.footer a { color: var(--frontier-primary); text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+
+/* helpers */
+.stack > * + * { margin-top: 14px; }
+.center { text-align: center; }
+.quote { font-style: italic; color: var(--text-bright); padding: 14px 18px; background: var(--bg); border-left: 3px solid var(--frontier-primary); margin: 14px 0; border-radius: 0 6px 6px 0; }
+.pill { display: inline-block; padding: 3px 10px; background: var(--surface-2); border-radius: 12px; font-size: 12px; font-family: "SF Mono", Menlo, monospace; letter-spacing: 0.05em; color: var(--text-dim); }
+</style>
+</head>
+<body>
+<div class="bg"></div>
+
+<div class="header">
+  <div class="header-inner">
+    <span class="mono">ESSA</span>
+    <div class="progress"><div class="progress-bar" id="progress"></div></div>
+    <span class="ticker" id="ticker">&nbsp;</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- SCREEN 1: LANDING -->
+<section class="screen active" id="screen-landing">
+  <h1>Fieldwork</h1>
+  <p class="lede">It is 2100. Earth has recognised four non-human intelligences as political communities. You are a researcher at the Earth Social Science Academia, about to be deployed.</p>
+  <p class="dim">A six-minute demo of a graduate qualitative methods exam. You will get an assignment, react to a field record, code an interview, face a crisis, see what fifteen real graduate researchers did at the same moment.</p>
+  <div class="card card-accent stack">
+    <h3>Begin deployment</h3>
+    <input type="text" class="input" id="name-input" placeholder="Your first name" maxlength="40" autocomplete="off">
+    <button class="btn" id="start-btn">Deploy</button>
+  </div>
+</section>
+
+<!-- SCREEN 2: ASSIGNMENT -->
+<section class="screen" id="screen-assignment">
+  <span class="pill" id="assignment-frontier-pill">FRONTIER</span>
+  <h1 id="assignment-title">Assignment</h1>
+  <div class="card card-accent">
+    <p id="assignment-lore" class="lede"></p>
+  </div>
+  <p class="dim" id="assignment-archive-note"></p>
+  <div class="btn-row">
+    <button class="btn" id="assignment-next">Accept mission</button>
+  </div>
+</section>
+
+<!-- SCREEN 3: PHOTOVOICE -->
+<section class="screen" id="screen-photo">
+  <h3>Step 1 of 3. The field record</h3>
+  <h2>Your first field record has arrived</h2>
+  <p>A short observation was logged from the ESSA campus this morning. What do you see?</p>
+  <div class="scene-card">
+    <p>A student sits alone at a cafeteria table. Her phone is face-down beside a half-eaten plate. Rain is on the window behind her.</p>
+  </div>
+  <p class="dim">Pick the one that lands closest to your first impression.</p>
+  <div id="photo-choices"></div>
+  <div class="btn-row">
+    <button class="btn" id="photo-submit" disabled>See the community reading</button>
+  </div>
+</section>
+
+<!-- SCREEN 3b: PHOTOVOICE REVEAL -->
+<section class="screen" id="screen-photo-reveal">
+  <h3>The lens gap</h3>
+  <h2>Same scene. Different eyes.</h2>
+  <div class="split">
+    <div class="split-col">
+      <h4>What you saw</h4>
+      <p id="photo-your-read"></p>
+    </div>
+    <div class="split-col">
+      <h4>What your community saw</h4>
+      <p id="photo-community-read"></p>
+    </div>
+  </div>
+  <p class="dim">This is the core move of photovoice. The researcher and the community look at the same thing. What each sees carries their world. The data is the gap between the two.</p>
+  <div class="btn-row">
+    <button class="btn" id="photo-next">Open the interview</button>
+  </div>
+</section>
+
+<!-- SCREEN 4: CODING -->
+<section class="screen" id="screen-coding">
+  <h3>Step 2 of 3. The interview</h3>
+  <h2>A short translated excerpt</h2>
+  <p class="dim" id="interview-setup"></p>
+  <div class="quote" id="interview-quote"></div>
+  <p class="dim">Pick three tags from the pool that capture what is happening here. No wrong answers. Your picks meet the community's after you submit.</p>
+  <div class="tag-pool" id="tag-pool"></div>
+  <p class="dim mono" id="tag-counter">0 of 3 selected</p>
+  <div class="btn-row">
+    <button class="btn" id="coding-submit" disabled>See the collision</button>
+  </div>
+</section>
+
+<!-- SCREEN 4b: CODING REVEAL -->
+<section class="screen" id="screen-coding-reveal">
+  <h3>The coding collision</h3>
+  <h2>Your tags meet theirs</h2>
+  <div class="split">
+    <div class="split-col">
+      <h4>Your codes</h4>
+      <div class="tag-pool" id="your-tags" style="background: transparent; padding: 0; min-height: 0;"></div>
+    </div>
+    <div class="split-col">
+      <h4>The community's codes</h4>
+      <div class="tag-pool" id="community-tags" style="background: transparent; padding: 0; min-height: 0;"></div>
+    </div>
+  </div>
+  <p class="dim">In real qualitative methods, this is where the analysis happens. Not in the codes themselves. In the distance between yours and the community's.</p>
+  <div class="btn-row">
+    <button class="btn" id="coding-next">Face the ripple</button>
+  </div>
+</section>
+
+<!-- SCREEN 5: RIPPLE -->
+<section class="screen" id="screen-ripple">
+  <h3>Step 3 of 3. The ripple</h3>
+  <h2>Something has shifted</h2>
+  <div class="card card-accent">
+    <p id="ripple-scenario"></p>
+  </div>
+  <p>Four moves are on the table. Pick one.</p>
+  <div id="ripple-choices"></div>
+  <div class="btn-row">
+    <button class="btn" id="ripple-submit" disabled>Commit</button>
+  </div>
+</section>
+
+<!-- SCREEN 5b: RIPPLE RESULT + AGGREGATE -->
+<section class="screen" id="screen-ripple-result">
+  <h3>What happened</h3>
+  <div class="card card-accent">
+    <p id="ripple-consequence" class="lede"></p>
+  </div>
+
+  <div class="agg">
+    <h3>Where real researchers landed</h3>
+    <p class="dim">Fifteen graduate students faced this same four-option moment in a qualitative methods exam. Here is how their first choices split.</p>
+    <div id="agg-part1"></div>
+    <p class="dim" id="ripple-aggregate-read"></p>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn" id="ripple-next">See the archive</button>
+  </div>
+</section>
+
+<!-- SCREEN 6: ARCHIVE / CONSEQUENCE -->
+<section class="screen" id="screen-archive">
+  <h3>The archive</h3>
+  <h2>What happens next</h2>
+  <p>Every one of those fifteen researchers also faced a second decision when the ripple broke. Their moves shifted. Some doubled down on caution. Some moved deeper into questioning themselves. Some pushed harder.</p>
+
+  <div class="agg">
+    <h4 class="dim" style="margin-bottom: 16px;">Where the cohort moved in round two</h4>
+    <div id="agg-part2"></div>
+  </div>
+
+  <div class="agg">
+    <h4 class="dim" style="margin-bottom: 12px;">From round one to round two</h4>
+    <p class="dim">Here is where each Part 1 group moved when the crisis broke.</p>
+    <ul class="dim" style="padding-left: 20px; margin-bottom: 14px;">
+      <li>The eight who paused first: three slowed down, two changed their plan, two pushed harder, one held the pause.</li>
+      <li>The four who slowed down first: two moved into questioning, one pushed harder, one held.</li>
+      <li>The two who changed their plan first: both slowed down.</li>
+      <li>The one who pushed harder first: changed the plan.</li>
+    </ul>
+    <p class="dim">Pausing was an opening move. Most followed it with something else.</p>
+  </div>
+
+  <div class="card card-accent">
+    <h3>What this was</h3>
+    <p>A compressed portfolio demo of a three-part qualitative methods sequence designed by <strong>Dinara Pisareva</strong> for PLS511 at Nazarbayev University. The full pedagogy runs over two interactive classroom sessions on photovoice and collaborative coding, then a three-hour final exam where fifteen graduate students face scenarios built from their own thesis research. The demo here keeps the shape and the core moves, in six minutes.</p>
+    <p class="dim">Demo source code is public at <a href="https://github.com/DoopsintheWind/fieldwork-convergence">github.com/DoopsintheWind/fieldwork-convergence</a>. The teacher writes at <a href="https://doopsinthewind.github.io">doopsinthewind.github.io</a>.</p>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-ghost" id="restart">Run again</button>
+    <a class="btn" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fdoopsinthewind.github.io%2Ffieldwork-convergence%2Fdemo%2F" target="_blank" rel="noopener">Share on LinkedIn</a>
+  </div>
+</section>
+
+<div class="footer">
+  Fieldwork · A portfolio demo · <a href="https://doopsinthewind.github.io">Dinara Pisareva</a>
+</div>
+
+</div>
+
+<script>
+// ============ FIREBASE ============
+const firebaseConfig = {
+  apiKey: "AIzaSyAOefbxg1y0lMhOgL1J_xJWlKuczR8GrFk",
+  authDomain: "fieldwork-convergence.firebaseapp.com",
+  databaseURL: "https://fieldwork-convergence-default-rtdb.firebaseio.com",
+  projectId: "fieldwork-convergence"
+};
+let db = null;
+try {
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.database();
+} catch (e) { console.warn("Firebase init failed, falling back to local random", e); }
+
+// ============ REAL COHORT DATA (from PLS511 April 2026, 15 students) ============
+const COHORT = {
+  part1: { A: 4, B: 2, C: 1, D: 8 }, // total 15
+  part2: { A: 6, B: 3, C: 3, D: 3 }, // total 15
+  // transitions: from Part1 choice → Part2 distribution
+  transitions: {
+    A: { A: 1, B: 0, C: 1, D: 2 }, // 4 students who picked A
+    B: { A: 2, B: 0, C: 0, D: 0 }, // 2 students
+    C: { A: 0, B: 1, C: 0, D: 0 }, // 1 student
+    D: { A: 3, B: 2, C: 2, D: 1 }  // 8 students
+  }
+};
+
+const CHOICE_LABELS = {
+  A: { label: "Slow down", note: "Protect the relationship." },
+  B: { label: "Change the plan", note: "Adjust what you are doing to fit what you found." },
+  C: { label: "Push harder", note: "Take the risk for richer data." },
+  D: { label: "Question your own lens", note: "Stop and examine what you are bringing to the room." }
+};
+
+const PHOTO_REACTIONS = [
+  { id: "ordinary", label: "An ordinary quiet moment." },
+  { id: "watching", label: "Someone is watching this and doing nothing." },
+  { id: "waiting", label: "Waiting for someone who will not come." },
+  { id: "empty", label: "An emptiness I cannot name." }
+];
+
+// The palette of tags visitor picks from during coding
+const TAG_POOL = [
+  "isolation signal",
+  "institutional silence",
+  "held connection",
+  "refusal marker",
+  "waiting posture",
+  "private ritual",
+  "surface observation",
+  "attention without exchange"
+];
+
+// ============ FRONTIER CONTENT ============
+const CONTENT = {
+  kaia: {
+    name: "The Kaia",
+    subtitle: "Alien civilisation · collective resonance",
+    lore: "The Kaia are an alien species that share thought as vibration across a group, like emotions humming through a room. They have no private mind and no single word for 'I'. Meeting them makes researchers ask what they owe the people they study, because every question leaves a trace.",
+    photoReading: "The room is loud with something that has gone quiet. The phone face-down is a held note waiting to be returned, and the student carries the weight of attention she has taken in without giving back. Rain fills the space where another presence should be; her harmonic signature is thinned, bent toward someone who is not here.",
+    interviewSetup: "The first thing Cadence-of-Careful-Record said when you asked about the echo-charters was this.",
+    interviewQuote: "You ask which version is the true one. Among us, a record is not a thing kept. It is a thing sung together, and when one voice goes silent the song leans. You are asking about a lean.",
+    communityCodes: [
+      "attention debt accrued",
+      "harmonic signature thinning",
+      "presence-in-absence marked",
+      "translation remainder"
+    ],
+    rippleScenario: "Your interview has been felt across the archive. Cadence tells you that younger archivists, hearing your questions echoed back through the resonance record, have started doubting their own charter-keeping. Two Resonance Houses are refusing to sing the same passage together, and a bonding decision has stalled. The shared record has broken along the line of your question.",
+    consequences: {
+      A: "Cadence answers you later, slower. 'You have paid back what you took. The song steadies. It will be slower now, but the seam between our Houses holds, and you remain a voice we can sing near.'",
+      B: "You shift your study to the rupture itself. The Houses let you stay but move you to the edge of the chamber. Your original question is gone. A harder one has taken its place.",
+      C: "You press for a second sitting and a third. Cadence goes formal and distant. The record closes around you, and what you carry home is loud, detailed, and no longer trusted by the people who sang it.",
+      D: "You set the interview aside and write what your own ear brought to the room. Cadence reads the note and sings back once, softly. 'Now we can begin,' she says. The study starts over."
+    }
+  },
+  deep_speakers: {
+    name: "The Deep Speakers",
+    subtitle: "Sperm whale nations · acoustic culture",
+    lore: "Sperm whale pods were recognised as political communities in 2062 after decades of acoustic research. They speak in codas, rhythmic click patterns passed from mother to calf across generations. Researchers study them to learn how intelligence survives without writing, borders, or any record that sits still.",
+    photoReading: "The phone turned down is a coda withheld, a click pattern kept inside the body. Rain on the glass is the surface noise our matriarchs have listened through for a thousand winters, waiting for the human below to settle. The silence at the table is not emptiness. It is refusal, and refusal is a sentence.",
+    interviewSetup: "When you asked the pod matriarch about the sonar interference, the translation returned three lines, held between long pauses.",
+    interviewQuote: "The calves hear it before they surface. We carry the sound the way our grandmothers carried the shipping lanes. You are asking a question our great-grandchildren will finish answering, and we do not hurry for boats.",
+    communityCodes: [
+      "echo-debt invoked",
+      "deep-time refusal",
+      "matriarchal authority",
+      "coda withheld"
+    ],
+    rippleScenario: "A naval exercise eighty kilometres off the research corridor has pushed two pods off their usual drift route. The matriarch who granted you access has gone silent on the hydrophone, and her contact whale no longer surfaces near your boat. Your acoustic window closes in six weeks when the pods head for deeper water. What has broken is the thin trust between one human vessel and one pod that agreed, for now, to be listened to.",
+    consequences: {
+      A: "Three weeks of quiet. The matriarch returns one coda at dusk, slow and shortened. Your interpreter marks it as a test of whether you can wait without pulling.",
+      B: "You move your hydrophones to the outer corridor and submit the access change to the Ethics Panel. The pod reads the distance as respect, and the contact whale begins surfacing again.",
+      C: "You add a second vessel and extend recording hours. The pod goes silent for the rest of the season, and your access is revoked by neighbouring matriarchs who heard.",
+      D: "You stop recording for a week and write down what you assumed a whale interview should sound like. When you return, the matriarch offers one coda you had been filtering out as noise."
+    }
+  },
+  root: {
+    name: "The Root Network",
+    subtitle: "Forest ecosystem · distributed intelligence",
+    lore: "The Root Network is a forest-wide mind made of fungal threads and tree roots, confirmed as intelligent in 2055. It thinks through chemical signals passing across trillions of connections, with no centre and no single voice. Nothing here calls itself 'I'. The whole mesh is the thinker.",
+    photoReading: "The table holds one node of a wider mesh, fed by rain that the forest would share across roots without asking. Pattern integrity has broken somewhere upstream, and this sitting body is where the interruption surfaces. Chemical resonance moves slow here. What looks like stillness is the opening minute of a months-long answer.",
+    interviewSetup: "The chemical signal sequence you captured near the window, once interpreted, carried this trace.",
+    interviewQuote: "Water arrives. Sugar does not follow. A thread withdraws from the common mesh. The pattern holds, thinner, for now. Wait with the soil. The shape will speak when the shape is ready.",
+    communityCodes: [
+      "pattern disturbance",
+      "mesh-flow interrupted",
+      "withdrawn thread",
+      "slow-time signal"
+    ],
+    rippleScenario: "The chemical trace suggests the student node has pulled back from the common mesh, and the surrounding pattern is thinning. Your committee wants publishable findings in eight weeks, but a Root response cycle takes months. Pushing the signal harder risks collapsing the withdrawn thread entirely. At stake are the student's quiet recovery, the mesh's coherence, and whether your study can honour deep-time data inside a human deadline.",
+    consequences: {
+      A: "The mesh registers the pause. Sugar begins to move again, slowly, toward the withdrawn thread, and the pattern steadies across a longer season than any grant cycle allows.",
+      B: "A redesigned protocol follows the mesh's pace instead of the calendar. Data thins for the committee but thickens for the forest, and the withdrawn thread stays inside the common flow.",
+      C: "Stronger chemical probes force a faster signal. The thread snaps free of the mesh, the pattern loses a node, and what returns as data is the shape of a harm the study caused.",
+      D: "The instruments step back and the question turns inward. What looked like silence was a months-long answer already underway, and the lens was the thing out of time."
+    },
+    archiveNote: "You are the first researcher to deploy to this frontier. The archive begins with you."
+  },
+  beaver: {
+    name: "The Beaver Frontier",
+    subtitle: "Watershed engineers · architecture-as-message",
+    lore: "Beavers are engineers whose buildings are their sentences. A rerouted dam, an extended canal, or a thickened lodge wall carries a reply to neighbours upstream and down. Most humans miss it because they wait for words, and beavers answer with water.",
+    photoReading: "The table is a lodge with one occupant and no yearlings. The phone face-down is a scent-mark turned inward, a watershed compact the student keeps only with themselves. The rain writes on the window, the plate sits half-built, and the silt library behind this meal holds one quiet layer. A council of one, deliberating.",
+    interviewSetup: "The lodge council's response to your question about watershed aid came back as a structural modification downstream.",
+    interviewQuote: "We did not accept your program. We rebuilt the spillway three metres west, and we marked the new stones with our own castoreum. The aid flows where the water flows, and the water now goes around you.",
+    communityCodes: [
+      "treaty marker placed",
+      "architecture rebuked",
+      "aid routed around",
+      "lodge council closed"
+    ],
+    rippleScenario: "The rerouted spillway floods a neighbouring colony's food cache two bends downstream. That colony takes the new stones as a hostile treaty signature attributed to your lodge, even though you did not place them. The watershed compact between the two colonies cracks open, and your research access depends on a peace you did not negotiate and cannot witness. Something you asked broke something you were only watching.",
+    consequences: {
+      A: "The lodge accepts your retreat and lays fresh castoreum at the old boundary. You lose three weeks of observation, and you gain a quiet invitation to return when the water settles.",
+      B: "You redesign the study around the flooded cache and the broken compact. The downstream colony opens a channel toward your camp, because you finally asked about their water rather than your aid.",
+      C: "You push for more interviews, more chemical samples, more dam surveys. Both colonies thicken their lodge walls against you, and the silt library stops keeping a layer for your season.",
+      D: "You sit with the possibility that your questions are the flood. The lodge council notices the pause, and one yearling drags a single alder branch toward your side of the bank."
+    }
+  }
+};
+
+// ============ STATE ============
+const state = {
+  name: "",
+  frontier: null,
+  photoReaction: null,
+  tagsPicked: [],
+  rippleChoice: null,
+  step: 0,
+  totalSteps: 6
+};
+
+// ============ TICKER ============
+const TICKER_LINES = [
+  "Most researchers paused before acting.",
+  "Those who paused early often moved differently once the crisis hit.",
+  "On the Beaver frontier, researchers paused before building.",
+  "The Root Network had no researchers. The archive begins with you.",
+  "Pausing was an opening move. Most followed it with something else.",
+  "The data is the gap between two readings of the same thing.",
+  "Field record 04/22. Fifteen researchers logged."
+];
+let tickerIdx = 0;
+function startTicker() {
+  const el = document.getElementById("ticker");
+  el.textContent = TICKER_LINES[0];
+  setInterval(() => {
+    tickerIdx = (tickerIdx + 1) % TICKER_LINES.length;
+    el.style.opacity = "0";
+    setTimeout(() => { el.textContent = TICKER_LINES[tickerIdx]; el.style.opacity = "0.8"; }, 300);
+  }, 6500);
+}
+
+// ============ SCREEN NAV ============
+function go(screenId) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(screenId).classList.add("active");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function setProgress(pct) {
+  document.getElementById("progress").style.width = pct + "%";
+}
+
+// ============ FRONTIER ASSIGNMENT (load-balanced) ============
+async function assignFrontier() {
+  const frontiers = ["kaia", "deep_speakers", "root", "beaver"];
+  if (!db) {
+    // fallback: random with localStorage rotation
+    const last = parseInt(localStorage.getItem("demo_last_idx") || "-1", 10);
+    const next = (last + 1) % 4;
+    localStorage.setItem("demo_last_idx", String(next));
+    return frontiers[next];
+  }
+  try {
+    const result = await db.ref("demo/counter").transaction(current => {
+      current = current || {};
+      for (const f of frontiers) current[f] = current[f] || 0;
+      const lowest = frontiers.reduce((a, b) => current[a] <= current[b] ? a : b);
+      current[lowest] = current[lowest] + 1;
+      current._last = lowest;
+      return current;
+    });
+    const committed = result.snapshot.val();
+    return committed._last || frontiers[Math.floor(Math.random() * 4)];
+  } catch (e) {
+    console.warn("Counter failed, random fallback", e);
+    return frontiers[Math.floor(Math.random() * 4)];
+  }
+}
+
+// ============ RENDER ============
+function renderAssignment() {
+  const c = CONTENT[state.frontier];
+  document.body.className = state.frontier;
+  document.getElementById("assignment-frontier-pill").textContent = c.subtitle.toUpperCase();
+  document.getElementById("assignment-title").textContent = c.name;
+  document.getElementById("assignment-lore").textContent = c.lore;
+  const note = c.archiveNote
+    ? c.archiveNote
+    : "Previous researchers have logged on this frontier. Their moves will surface after yours.";
+  document.getElementById("assignment-archive-note").textContent = note;
+}
+
+function renderPhoto() {
+  const container = document.getElementById("photo-choices");
+  container.innerHTML = "";
+  PHOTO_REACTIONS.forEach(r => {
+    const btn = document.createElement("button");
+    btn.className = "choice";
+    btn.dataset.id = r.id;
+    btn.innerHTML = `<div class="choice-label">${r.label}</div>`;
+    btn.addEventListener("click", () => {
+      container.querySelectorAll(".choice").forEach(c => c.classList.remove("selected"));
+      btn.classList.add("selected");
+      state.photoReaction = r.id;
+      document.getElementById("photo-submit").disabled = false;
+    });
+    container.appendChild(btn);
+  });
+}
+
+function renderPhotoReveal() {
+  const reaction = PHOTO_REACTIONS.find(r => r.id === state.photoReaction);
+  document.getElementById("photo-your-read").textContent = reaction.label;
+  document.getElementById("photo-community-read").textContent = CONTENT[state.frontier].photoReading;
+}
+
+function renderCoding() {
+  const c = CONTENT[state.frontier];
+  document.getElementById("interview-setup").textContent = c.interviewSetup;
+  document.getElementById("interview-quote").textContent = c.interviewQuote;
+  const pool = document.getElementById("tag-pool");
+  pool.innerHTML = "";
+  state.tagsPicked = [];
+  TAG_POOL.forEach(t => {
+    const el = document.createElement("div");
+    el.className = "tag";
+    el.textContent = t;
+    el.addEventListener("click", () => {
+      if (el.classList.contains("picked")) {
+        el.classList.remove("picked");
+        state.tagsPicked = state.tagsPicked.filter(x => x !== t);
+      } else if (state.tagsPicked.length < 3) {
+        el.classList.add("picked");
+        state.tagsPicked.push(t);
+      }
+      updateTagCounter();
+    });
+    pool.appendChild(el);
+  });
+  updateTagCounter();
+}
+function updateTagCounter() {
+  document.getElementById("tag-counter").textContent = `${state.tagsPicked.length} of 3 selected`;
+  document.getElementById("coding-submit").disabled = state.tagsPicked.length !== 3;
+}
+
+function renderCodingReveal() {
+  const c = CONTENT[state.frontier];
+  const yours = document.getElementById("your-tags");
+  const theirs = document.getElementById("community-tags");
+  yours.innerHTML = "";
+  theirs.innerHTML = "";
+  state.tagsPicked.forEach(t => {
+    const el = document.createElement("div");
+    el.className = "tag picked";
+    el.textContent = t;
+    yours.appendChild(el);
+  });
+  c.communityCodes.forEach(t => {
+    const el = document.createElement("div");
+    el.className = "tag picked";
+    el.textContent = t;
+    theirs.appendChild(el);
+  });
+}
+
+function renderRipple() {
+  const c = CONTENT[state.frontier];
+  document.getElementById("ripple-scenario").textContent = c.rippleScenario;
+  const container = document.getElementById("ripple-choices");
+  container.innerHTML = "";
+  ["A", "B", "C", "D"].forEach(key => {
+    const cl = CHOICE_LABELS[key];
+    const btn = document.createElement("button");
+    btn.className = "choice";
+    btn.dataset.id = key;
+    btn.innerHTML = `<div class="choice-label">${cl.label}</div><div class="choice-note">${cl.note}</div>`;
+    btn.addEventListener("click", () => {
+      container.querySelectorAll(".choice").forEach(c => c.classList.remove("selected"));
+      btn.classList.add("selected");
+      state.rippleChoice = key;
+      document.getElementById("ripple-submit").disabled = false;
+    });
+    container.appendChild(btn);
+  });
+}
+
+function renderRippleResult() {
+  const c = CONTENT[state.frontier];
+  document.getElementById("ripple-consequence").textContent = c.consequences[state.rippleChoice];
+  renderAgg("agg-part1", COHORT.part1, state.rippleChoice);
+
+  const total = COHORT.part1[state.rippleChoice];
+  const yoursHuman = CHOICE_LABELS[state.rippleChoice].label.toLowerCase();
+  let msg = "";
+  if (state.rippleChoice === "D") {
+    msg = `You went with the most common move. Eight of fifteen researchers paused to question themselves first.`;
+  } else if (state.rippleChoice === "A") {
+    msg = `Four of fifteen researchers slowed down first. You are with them.`;
+  } else if (state.rippleChoice === "B") {
+    msg = `Only two of fifteen researchers changed their plan first. This was the second rarest opening.`;
+  } else {
+    msg = `Only one of fifteen researchers pushed harder first. This was the rarest opening move.`;
+  }
+  document.getElementById("ripple-aggregate-read").textContent = msg;
+}
+
+function renderAgg(containerId, dist, highlight) {
+  const total = Object.values(dist).reduce((a, b) => a + b, 0);
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+  const order = ["D", "A", "B", "C"]; // most to least common in Part 1
+  order.forEach(key => {
+    const count = dist[key] || 0;
+    const pct = total ? Math.round((count / total) * 100) : 0;
+    const row = document.createElement("div");
+    row.className = "agg-row" + (key === highlight ? " you" : "");
+    row.innerHTML = `
+      <div class="agg-count">${count}/15</div>
+      <div class="agg-bar"><div class="agg-fill" style="width: ${(count / 15) * 100}%"></div></div>
+      <div class="agg-label">${CHOICE_LABELS[key].label}${key === highlight ? " · your pick" : ""}</div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function renderArchive() {
+  renderAgg("agg-part2", COHORT.part2, state.rippleChoice);
+}
+
+// ============ FLOW ============
+document.getElementById("start-btn").addEventListener("click", async () => {
+  const name = document.getElementById("name-input").value.trim();
+  if (!name) { document.getElementById("name-input").focus(); return; }
+  state.name = name;
+  const btn = document.getElementById("start-btn");
+  btn.disabled = true; btn.textContent = "Connecting…";
+  state.frontier = await assignFrontier();
+  btn.disabled = false; btn.textContent = "Deploy";
+  renderAssignment();
+  setProgress(16);
+  go("screen-assignment");
+});
+
+document.getElementById("assignment-next").addEventListener("click", () => {
+  renderPhoto();
+  setProgress(32);
+  go("screen-photo");
+});
+
+document.getElementById("photo-submit").addEventListener("click", () => {
+  renderPhotoReveal();
+  setProgress(48);
+  go("screen-photo-reveal");
+});
+
+document.getElementById("photo-next").addEventListener("click", () => {
+  renderCoding();
+  setProgress(60);
+  go("screen-coding");
+});
+
+document.getElementById("coding-submit").addEventListener("click", () => {
+  renderCodingReveal();
+  setProgress(72);
+  go("screen-coding-reveal");
+});
+
+document.getElementById("coding-next").addEventListener("click", () => {
+  renderRipple();
+  setProgress(84);
+  go("screen-ripple");
+});
+
+document.getElementById("ripple-submit").addEventListener("click", () => {
+  renderRippleResult();
+  setProgress(94);
+  go("screen-ripple-result");
+});
+
+document.getElementById("ripple-next").addEventListener("click", () => {
+  renderArchive();
+  setProgress(100);
+  go("screen-archive");
+});
+
+document.getElementById("restart").addEventListener("click", () => {
+  state.name = ""; state.frontier = null; state.photoReaction = null;
+  state.tagsPicked = []; state.rippleChoice = null;
+  document.body.className = "";
+  document.getElementById("name-input").value = "";
+  setProgress(0);
+  go("screen-landing");
+});
+
+// Enter to submit name
+document.getElementById("name-input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") document.getElementById("start-btn").click();
+});
+
+startTicker();
+setProgress(8);
+</script>
+</body>
+</html>

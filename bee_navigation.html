@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Bees Find Their Way Home</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background: #f4f1ea;
+    color: #2a2620;
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  h1 {
+    font-size: 1.6em;
+    margin-bottom: 8px;
+    color: #3a2e1a;
+  }
+  .subtitle {
+    color: #6b5d4a;
+    margin-bottom: 24px;
+    font-style: italic;
+    font-size: 0.95em;
+  }
+  .scene {
+    background: #faf7ef;
+    border: 1px solid #d4c8ad;
+    border-radius: 4px;
+    padding: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .scene h2 {
+    font-size: 1.15em;
+    margin-bottom: 10px;
+    color: #4a3a1f;
+  }
+  .scene p {
+    margin-bottom: 12px;
+    font-size: 0.95em;
+  }
+  canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: #f0e9d6;
+    border: 1px solid #c8b88a;
+    border-radius: 3px;
+    margin: 12px 0;
+    cursor: pointer;
+  }
+  .controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  button {
+    background: #6b5b3a;
+    color: #faf7ef;
+    border: none;
+    padding: 8px 14px;
+    font-family: inherit;
+    font-size: 0.9em;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: background 0.15s;
+  }
+  button:hover {
+    background: #4a3e26;
+  }
+  button:disabled {
+    background: #b0a584;
+    cursor: not-allowed;
+  }
+  .legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 0.85em;
+    color: #5a4d36;
+    margin-top: 8px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 2px;
+    border: 1px solid #8a7a55;
+  }
+  .takeaway {
+    background: #ede4cc;
+    border-left: 3px solid #8a6f3a;
+    padding: 12px 16px;
+    margin-top: 12px;
+    font-size: 0.92em;
+    font-style: italic;
+    color: #4a3e26;
+  }
+  @media (max-width: 600px) {
+    body { padding: 12px; }
+    h1 { font-size: 1.35em; }
+  }
+</style>
+</head>
+<body>
+
+<h1>How Bees Find Their Way Home</h1>
+<p class="subtitle">A small visualization of why bee navigation is "almost Euclidean, but not quite"</p>
+
+<!-- Scene 1: Path integration -->
+<div class="scene">
+  <h2>1. Path Integration: The Bee Always Knows Where Home Is</h2>
+  <p>A bee leaves the hive and flies a meandering path looking for flowers. As she flies, her brain quietly does vector addition: every wing-beat updates an internal "vector home." When she finds the flower, she knows exactly which way to fly to go straight back, even though her outbound path was a tangle of detours.</p>
+  <p>Click <strong>"Fly out"</strong> to send the bee on a foraging trip. Then click <strong>"Go home"</strong> and watch her fly straight back along the vector she's been tracking the whole time.</p>
+  <canvas id="canvas1" width="800" height="400"></canvas>
+  <div class="controls">
+    <button id="fly1">Fly out</button>
+    <button id="home1" disabled>Go home</button>
+    <button id="reset1">Reset</button>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="swatch" style="background:#c4a754"></div>Hive</div>
+    <div class="legend-item"><div class="swatch" style="background:#e84a3a"></div>Flower</div>
+    <div class="legend-item"><div class="swatch" style="background:#3a5a8a"></div>Outbound path (meandering)</div>
+    <div class="legend-item"><div class="swatch" style="background:#8a3a8a"></div>Home vector (the bee's belief)</div>
+    <div class="legend-item"><div class="swatch" style="background:#3a8a4a"></div>Return path (straight)</div>
+  </div>
+  <div class="takeaway">
+    The straight return flight is the magic. The bee never traced the outbound path in reverse. She integrated her movements as she went and trusted the resulting vector. This is path integration. It looks Euclidean: vectors add, the bee gets home.
+  </div>
+</div>
+
+<!-- Scene 2: Errors accumulating -->
+<div class="scene">
+  <h2>2. But the Vector Drifts: Errors Accumulate</h2>
+  <p>The catch is that path integration is not perfect. Every wing-beat, every turn, every wind gust adds a tiny error to the bee's internal vector. Most of the time the errors are small enough that she still gets home. But on long, twisty flights the errors build up, and the bee's <em>belief</em> about where home is starts to drift away from where home actually is.</p>
+  <p>Click <strong>"Fly with drift"</strong>. The blue path is the bee's actual flight. The purple line is where the bee <em>thinks</em> home is. Watch the purple drift away from the real hive as the flight gets longer.</p>
+  <canvas id="canvas2" width="800" height="400"></canvas>
+  <div class="controls">
+    <button id="fly2">Fly with drift</button>
+    <button id="reset2">Reset</button>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="swatch" style="background:#c4a754"></div>Real hive</div>
+    <div class="legend-item"><div class="swatch" style="background:#e84a3a"></div>Flower</div>
+    <div class="legend-item"><div class="swatch" style="background:#3a5a8a"></div>Bee's actual path</div>
+    <div class="legend-item"><div class="swatch" style="background:#8a3a8a"></div>Where the bee thinks home is</div>
+  </div>
+  <div class="takeaway">
+    A pure Euclidean machine wouldn't have this problem. Vectors just add, errors don't compound. But the bee's brain is biological, noisy, and the addition is approximate. After a long enough flight, the bee's internal map and the real world are out of sync. If she trusted the vector blindly, she'd fly to the wrong place and get lost.
+  </div>
+</div>
+
+<!-- Scene 3: Landmark correction -->
+<div class="scene">
+  <h2>3. The Hybrid Trick: Landmarks Snap the Map Back</h2>
+  <p>Here's where it stops being Euclidean. When the drifted bee gets within sight of a familiar landmark — a tree, a rock, a colored shape near the hive — her brain doesn't recompute coordinates. It snaps. The landmark says "you are here," and the internal vector instantly corrects to match. This is not how Euclidean geometry works. Euclidean geometry doesn't have landmarks that override coordinates. This is something else, a topological trick layered on top of the vector math.</p>
+  <p>Click <strong>"Fly with landmarks"</strong>. The bee flies, drifts, then sees a landmark and snaps. Watch the purple line jump.</p>
+  <canvas id="canvas3" width="800" height="400"></canvas>
+  <div class="controls">
+    <button id="fly3">Fly with landmarks</button>
+    <button id="reset3">Reset</button>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="swatch" style="background:#c4a754"></div>Hive</div>
+    <div class="legend-item"><div class="swatch" style="background:#e84a3a"></div>Flower</div>
+    <div class="legend-item"><div class="swatch" style="background:#5a8a3a"></div>Landmark (familiar tree)</div>
+    <div class="legend-item"><div class="swatch" style="background:#3a5a8a"></div>Actual path</div>
+    <div class="legend-item"><div class="swatch" style="background:#8a3a8a"></div>Bee's belief about home</div>
+  </div>
+  <div class="takeaway">
+    The snap is the un-Euclidean part. The bee is running two systems at once: a continuous vector tracker (Euclidean-ish) and a discrete landmark recognizer (topological). When they disagree, the landmark wins. This is a hybrid that doesn't match any clean textbook geometry. It's not bad geometry. It's a different kind of geometry, evolved for the specific problem of being a small flying creature in a complicated world.
+  </div>
+</div>
+
+<div class="scene">
+  <h2>The Big Idea</h2>
+  <p>The bee isn't doing bad Euclidean math. She's doing perfect bee math. Her navigation is a hybrid of approximate vector addition and discrete landmark snapping, optimized over millions of years for the actual problem of getting home from a flower. There is no abstract triangle in her head. There is no Pythagorean theorem. There is something more interesting: a working solution that uses the world itself as part of the computation.</p>
+  <p>When Moira Dillon argues that human geometric understanding comes from "wandering rather than worksheets," this is the kind of wandering she means. The bee shows us what the substrate looks like in its purest form, before language gets layered on top. Humans have the same kind of substrate. We just also have words, and the words let us pretend our wandering is something tidier than it is.</p>
+</div>
+
+<script>
+// ============================================================
+// Helpers
+// ============================================================
+function setupCanvas(canvas) {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w: rect.width, h: rect.height };
+}
+
+function drawHive(ctx, x, y) {
+  ctx.fillStyle = '#c4a754';
+  ctx.strokeStyle = '#6b5b3a';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y, 14, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  // little hexagon pattern hint
+  ctx.fillStyle = '#6b5b3a';
+  ctx.font = '10px Georgia';
+  ctx.textAlign = 'center';
+  ctx.fillText('hive', x, y + 28);
+}
+
+function drawFlower(ctx, x, y) {
+  ctx.fillStyle = '#e84a3a';
+  ctx.strokeStyle = '#8a2a1a';
+  ctx.lineWidth = 1.5;
+  for (let i = 0; i < 5; i++) {
+    const a = (i / 5) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.arc(x + Math.cos(a) * 6, y + Math.sin(a) * 6, 5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  }
+  ctx.fillStyle = '#f5d24a';
+  ctx.beginPath();
+  ctx.arc(x, y, 4, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawBee(ctx, x, y, angle) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+  // body
+  ctx.fillStyle = '#3a2e1a';
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 6, 4, 0, 0, Math.PI * 2);
+  ctx.fill();
+  // stripes
+  ctx.fillStyle = '#f5c84a';
+  ctx.fillRect(-4, -3, 2, 6);
+  ctx.fillRect(0, -3, 2, 6);
+  // wings
+  ctx.fillStyle = 'rgba(200, 220, 240, 0.6)';
+  ctx.beginPath();
+  ctx.ellipse(-1, -4, 4, 2, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse(-1, 4, 4, 2, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawLandmark(ctx, x, y) {
+  // a small tree
+  ctx.fillStyle = '#5a8a3a';
+  ctx.strokeStyle = '#2a4a1a';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.arc(x, y - 4, 12, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = '#5a4326';
+  ctx.fillRect(x - 2, y + 4, 4, 8);
+  // dotted circle = "vision range"
+  ctx.strokeStyle = 'rgba(90, 138, 58, 0.4)';
+  ctx.setLineDash([3, 4]);
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(x, y, 60, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function drawBackground(ctx, w, h) {
+  ctx.fillStyle = '#f0e9d6';
+  ctx.fillRect(0, 0, w, h);
+  // soft grass texture
+  ctx.fillStyle = 'rgba(140, 160, 100, 0.15)';
+  for (let i = 0; i < 80; i++) {
+    const x = (i * 137.5) % w;
+    const y = (i * 73.3) % h;
+    ctx.fillRect(x, y, 2, 4);
+  }
+}
+
+// ============================================================
+// Scene 1: Clean path integration
+// ============================================================
+(function scene1() {
+  const canvas = document.getElementById('canvas1');
+  const { ctx, w, h } = setupCanvas(canvas);
+
+  const hive = { x: 100, y: h / 2 };
+  const flower = { x: w - 120, y: h / 2 - 60 };
+
+  // Generate a meandering outbound path
+  function generatePath() {
+    const points = [{ x: hive.x, y: hive.y }];
+    let x = hive.x, y = hive.y;
+    const dx = (flower.x - hive.x) / 30;
+    const dy = (flower.y - hive.y) / 30;
+    for (let i = 0; i < 30; i++) {
+      x += dx + Math.sin(i * 0.7) * 18 + (Math.random() - 0.5) * 8;
+      y += dy + Math.cos(i * 0.5) * 22 + (Math.random() - 0.5) * 8;
+      points.push({ x, y });
+    }
+    points.push({ x: flower.x, y: flower.y });
+    return points;
+  }
+
+  let path = generatePath();
+  let progress = 0;
+  let phase = 'idle'; // idle, flying, atFlower, returning, done
+  let returnProgress = 0;
+
+  function draw() {
+    drawBackground(ctx, w, h);
+    drawHive(ctx, hive.x, hive.y);
+    drawFlower(ctx, flower.x, flower.y);
+
+    // Draw the outbound path so far
+    if (progress > 0) {
+      ctx.strokeStyle = '#3a5a8a';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(path[0].x, path[0].y);
+      for (let i = 1; i <= Math.min(progress, path.length - 1); i++) {
+        ctx.lineTo(path[i].x, path[i].y);
+      }
+      ctx.stroke();
+    }
+
+    // Draw the home vector (purple line from current pos to hive)
+    if (phase !== 'idle' && progress > 0) {
+      const idx = Math.min(progress, path.length - 1);
+      const cur = path[idx];
+      ctx.strokeStyle = 'rgba(138, 58, 138, 0.6)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([6, 4]);
+      ctx.beginPath();
+      ctx.moveTo(cur.x, cur.y);
+      ctx.lineTo(hive.x, hive.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Draw return path
+    if (phase === 'returning' || phase === 'done') {
+      ctx.strokeStyle = '#3a8a4a';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(flower.x, flower.y);
+      const t = returnProgress;
+      const rx = flower.x + (hive.x - flower.x) * t;
+      const ry = flower.y + (hive.y - flower.y) * t;
+      ctx.lineTo(rx, ry);
+      ctx.stroke();
+    }
+
+    // Draw the bee
+    let bx, by, ba;
+    if (phase === 'flying' || phase === 'atFlower') {
+      const idx = Math.min(progress, path.length - 1);
+      bx = path[idx].x;
+      by = path[idx].y;
+      const prev = path[Math.max(0, idx - 1)];
+      ba = Math.atan2(by - prev.y, bx - prev.x);
+    } else if (phase === 'returning' || phase === 'done') {
+      const t = returnProgress;
+      bx = flower.x + (hive.x - flower.x) * t;
+      by = flower.y + (hive.y - flower.y) * t;
+      ba = Math.atan2(hive.y - flower.y, hive.x - flower.x);
+    } else {
+      bx = hive.x;
+      by = hive.y;
+      ba = 0;
+    }
+    drawBee(ctx, bx, by, ba);
+  }
+
+  function animate() {
+    if (phase === 'flying') {
+      progress++;
+      if (progress >= path.length - 1) {
+        phase = 'atFlower';
+        document.getElementById('home1').disabled = false;
+      }
+    } else if (phase === 'returning') {
+      returnProgress += 0.015;
+      if (returnProgress >= 1) {
+        returnProgress = 1;
+        phase = 'done';
+      }
+    }
+    draw();
+    if (phase === 'flying' || phase === 'returning') {
+      requestAnimationFrame(animate);
+    }
+  }
+
+  document.getElementById('fly1').addEventListener('click', () => {
+    if (phase !== 'idle') return;
+    phase = 'flying';
+    document.getElementById('fly1').disabled = true;
+    animate();
+  });
+
+  document.getElementById('home1').addEventListener('click', () => {
+    if (phase !== 'atFlower') return;
+    phase = 'returning';
+    returnProgress = 0;
+    document.getElementById('home1').disabled = true;
+    animate();
+  });
+
+  document.getElementById('reset1').addEventListener('click', () => {
+    path = generatePath();
+    progress = 0;
+    returnProgress = 0;
+    phase = 'idle';
+    document.getElementById('fly1').disabled = false;
+    document.getElementById('home1').disabled = true;
+    draw();
+  });
+
+  draw();
+})();
+
+// ============================================================
+// Scene 2: Drift
+// ============================================================
+(function scene2() {
+  const canvas = document.getElementById('canvas2');
+  const { ctx, w, h } = setupCanvas(canvas);
+
+  const hive = { x: 100, y: h / 2 };
+  const flower = { x: w - 120, y: h / 2 + 40 };
+
+  function generatePath() {
+    const points = [{ x: hive.x, y: hive.y }];
+    let x = hive.x, y = hive.y;
+    const steps = 60;
+    const dx = (flower.x - hive.x) / steps;
+    const dy = (flower.y - hive.y) / steps;
+    for (let i = 0; i < steps; i++) {
+      x += dx + Math.sin(i * 0.4) * 20 + Math.cos(i * 0.9) * 8;
+      y += dy + Math.cos(i * 0.3) * 25 + Math.sin(i * 0.7) * 6;
+      points.push({ x, y });
+    }
+    points.push({ x: flower.x, y: flower.y });
+    return points;
+  }
+
+  let path = generatePath();
+  let progress = 0;
+  let phase = 'idle';
+  // belief drift accumulates
+  let driftX = 0, driftY = 0;
+
+  function draw() {
+    drawBackground(ctx, w, h);
+    drawHive(ctx, hive.x, hive.y);
+    drawFlower(ctx, flower.x, flower.y);
+
+    // Outbound path
+    if (progress > 0) {
+      ctx.strokeStyle = '#3a5a8a';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(path[0].x, path[0].y);
+      for (let i = 1; i <= Math.min(progress, path.length - 1); i++) {
+        ctx.lineTo(path[i].x, path[i].y);
+      }
+      ctx.stroke();
+    }
+
+    // The bee's belief about where home is (drifted)
+    if (phase !== 'idle' && progress > 0) {
+      const idx = Math.min(progress, path.length - 1);
+      const cur = path[idx];
+      const believedHomeX = hive.x + driftX;
+      const believedHomeY = hive.y + driftY;
+
+      // line from bee to believed home
+      ctx.strokeStyle = 'rgba(138, 58, 138, 0.7)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([6, 4]);
+      ctx.beginPath();
+      ctx.moveTo(cur.x, cur.y);
+      ctx.lineTo(believedHomeX, believedHomeY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // ghost hive showing where the bee thinks home is
+      ctx.fillStyle = 'rgba(138, 58, 138, 0.3)';
+      ctx.strokeStyle = 'rgba(138, 58, 138, 0.7)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.arc(believedHomeX, believedHomeY, 14, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = 'rgba(138, 58, 138, 0.9)';
+      ctx.font = '10px Georgia';
+      ctx.textAlign = 'center';
+      ctx.fillText('thinks home', believedHomeX, believedHomeY + 28);
+    }
+
+    // Bee
+    if (phase === 'idle') {
+      drawBee(ctx, hive.x, hive.y, 0);
+    } else {
+      const idx = Math.min(progress, path.length - 1);
+      const cur = path[idx];
+      const prev = path[Math.max(0, idx - 1)];
+      const ba = Math.atan2(cur.y - prev.y, cur.x - prev.x);
+      drawBee(ctx, cur.x, cur.y, ba);
+    }
+  }
+
+  function animate() {
+    if (phase === 'flying') {
+      progress++;
+      // accumulate drift each step
+      driftX += (Math.random() - 0.5) * 2.2;
+      driftY += (Math.random() - 0.5) * 2.2;
+      if (progress >= path.length - 1) {
+        phase = 'done';
+      }
+    }
+    draw();
+    if (phase === 'flying') {
+      requestAnimationFrame(animate);
+    }
+  }
+
+  document.getElementById('fly2').addEventListener('click', () => {
+    if (phase !== 'idle') return;
+    phase = 'flying';
+    document.getElementById('fly2').disabled = true;
+    animate();
+  });
+
+  document.getElementById('reset2').addEventListener('click', () => {
+    path = generatePath();
+    progress = 0;
+    driftX = 0;
+    driftY = 0;
+    phase = 'idle';
+    document.getElementById('fly2').disabled = false;
+    draw();
+  });
+
+  draw();
+})();
+
+// ============================================================
+// Scene 3: Landmark snap
+// ============================================================
+(function scene3() {
+  const canvas = document.getElementById('canvas3');
+  const { ctx, w, h } = setupCanvas(canvas);
+
+  const hive = { x: 100, y: h / 2 };
+  const flower = { x: w - 120, y: h / 2 - 50 };
+  const landmark = { x: 240, y: h / 2 - 80 };
+
+  function generateOutbound() {
+    const points = [{ x: hive.x, y: hive.y }];
+    let x = hive.x, y = hive.y;
+    const steps = 45;
+    const dx = (flower.x - hive.x) / steps;
+    const dy = (flower.y - hive.y) / steps;
+    for (let i = 0; i < steps; i++) {
+      x += dx + Math.sin(i * 0.5) * 18;
+      y += dy + Math.cos(i * 0.4) * 22;
+      points.push({ x, y });
+    }
+    points.push({ x: flower.x, y: flower.y });
+    return points;
+  }
+
+  // Return path that drifts then snaps near landmark
+  function generateReturn() {
+    const points = [{ x: flower.x, y: flower.y }];
+    // bee tries to return based on (drifted) belief
+    // her believed home is offset, so she flies toward an offset point
+    const believedOffsetX = -70;
+    const believedOffsetY = 90;
+    const targetX = hive.x + believedOffsetX;
+    const targetY = hive.y + believedOffsetY;
+    const steps = 25;
+    for (let i = 1; i <= steps; i++) {
+      const t = i / steps;
+      points.push({
+        x: flower.x + (targetX - flower.x) * t,
+        y: flower.y + (targetY - flower.y) * t
+      });
+    }
+    return points;
+  }
+
+  let outbound = generateOutbound();
+  let returnPath = generateReturn();
+  let outProgress = 0;
+  let retProgress = 0;
+  let phase = 'idle'; // idle, outbound, returning, snapping, snapHome, done
+  let driftX = 0, driftY = 0;
+  let snapStart = null;
+  let snapAnim = 0;
+
+  function distToLandmark(p) {
+    return Math.hypot(p.x - landmark.x, p.y - landmark.y);
+  }
+
+  function draw() {
+    drawBackground(ctx, w, h);
+    drawLandmark(ctx, landmark.x, landmark.y);
+    drawHive(ctx, hive.x, hive.y);
+    drawFlower(ctx, flower.x, flower.y);
+
+    // Outbound path
+    if (outProgress > 0) {
+      ctx.strokeStyle = '#3a5a8a';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(outbound[0].x, outbound[0].y);
+      for (let i = 1; i <= Math.min(outProgress, outbound.length - 1); i++) {
+        ctx.lineTo(outbound[i].x, outbound[i].y);
+      }
+      ctx.stroke();
+    }
+
+    // Return path (drifted)
+    if (phase === 'returning' || phase === 'snapping' || phase === 'snapHome' || phase === 'done') {
+      ctx.strokeStyle = '#3a5a8a';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(returnPath[0].x, returnPath[0].y);
+      for (let i = 1; i <= Math.min(retProgress, returnPath.length - 1); i++) {
+        ctx.lineTo(returnPath[i].x, returnPath[i].y);
+      }
+      ctx.stroke();
+    }
+
+    // Snap segment (bee corrects course toward real hive)
+    if (phase === 'snapHome' || phase === 'done') {
+      const startP = returnPath[Math.min(retProgress, returnPath.length - 1)];
+      ctx.strokeStyle = '#3a8a4a';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(startP.x, startP.y);
+      const t = snapAnim;
+      const sx = startP.x + (hive.x - startP.x) * t;
+      const sy = startP.y + (hive.y - startP.y) * t;
+      ctx.lineTo(sx, sy);
+      ctx.stroke();
+    }
+
+    // Belief about home (purple)
+    if (phase !== 'idle') {
+      let curPos;
+      if (phase === 'outbound') {
+        curPos = outbound[Math.min(outProgress, outbound.length - 1)];
+      } else if (phase === 'returning') {
+        curPos = returnPath[Math.min(retProgress, returnPath.length - 1)];
+      } else {
+        curPos = returnPath[Math.min(retProgress, returnPath.length - 1)];
+      }
+
+      let believedX, believedY;
+      if (phase === 'snapHome' || phase === 'done') {
+        // After snap, belief = real
+        believedX = hive.x;
+        believedY = hive.y;
+      } else if (phase === 'snapping') {
+        // Animate snap
+        const offsetX = -70 * (1 - snapAnim);
+        const offsetY = 90 * (1 - snapAnim);
+        believedX = hive.x + offsetX;
+        believedY = hive.y + offsetY;
+      } else {
+        believedX = hive.x - 70;
+        believedY = hive.y + 90;
+      }
+
+      // line bee -> believed
+      ctx.strokeStyle = 'rgba(138, 58, 138, 0.7)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([6, 4]);
+      ctx.beginPath();
+      ctx.moveTo(curPos.x, curPos.y);
+      ctx.lineTo(believedX, believedY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // ghost hive
+      ctx.fillStyle = 'rgba(138, 58, 138, 0.3)';
+      ctx.strokeStyle = 'rgba(138, 58, 138, 0.7)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.arc(believedX, believedY, 14, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Bee
+    let bx, by, ba;
+    if (phase === 'idle') {
+      bx = hive.x; by = hive.y; ba = 0;
+    } else if (phase === 'outbound') {
+      const idx = Math.min(outProgress, outbound.length - 1);
+      bx = outbound[idx].x;
+      by = outbound[idx].y;
+      const prev = outbound[Math.max(0, idx - 1)];
+      ba = Math.atan2(by - prev.y, bx - prev.x);
+    } else if (phase === 'returning' || phase === 'snapping') {
+      const idx = Math.min(retProgress, returnPath.length - 1);
+      bx = returnPath[idx].x;
+      by = returnPath[idx].y;
+      const prev = returnPath[Math.max(0, idx - 1)];
+      ba = Math.atan2(by - prev.y, bx - prev.x);
+    } else if (phase === 'snapHome' || phase === 'done') {
+      const startP = returnPath[Math.min(retProgress, returnPath.length - 1)];
+      const t = snapAnim;
+      bx = startP.x + (hive.x - startP.x) * t;
+      by = startP.y + (hive.y - startP.y) * t;
+      ba = Math.atan2(hive.y - startP.y, hive.x - startP.x);
+    }
+    drawBee(ctx, bx, by, ba);
+  }
+
+  function animate() {
+    if (phase === 'outbound') {
+      outProgress++;
+      if (outProgress >= outbound.length - 1) {
+        phase = 'returning';
+        retProgress = 0;
+      }
+    } else if (phase === 'returning') {
+      retProgress++;
+      // check if near landmark
+      const cur = returnPath[Math.min(retProgress, returnPath.length - 1)];
+      if (distToLandmark(cur) < 60) {
+        phase = 'snapping';
+        snapAnim = 0;
+      } else if (retProgress >= returnPath.length - 1) {
+        phase = 'done';
+      }
+    } else if (phase === 'snapping') {
+      snapAnim += 0.04;
+      if (snapAnim >= 1) {
+        snapAnim = 0;
+        phase = 'snapHome';
+      }
+    } else if (phase === 'snapHome') {
+      snapAnim += 0.018;
+      if (snapAnim >= 1) {
+        snapAnim = 1;
+        phase = 'done';
+      }
+    }
+    draw();
+    if (phase === 'outbound' || phase === 'returning' || phase === 'snapping' || phase === 'snapHome') {
+      requestAnimationFrame(animate);
+    }
+  }
+
+  document.getElementById('fly3').addEventListener('click', () => {
+    if (phase !== 'idle') return;
+    phase = 'outbound';
+    document.getElementById('fly3').disabled = true;
+    animate();
+  });
+
+  document.getElementById('reset3').addEventListener('click', () => {
+    outbound = generateOutbound();
+    returnPath = generateReturn();
+    outProgress = 0;
+    retProgress = 0;
+    snapAnim = 0;
+    phase = 'idle';
+    document.getElementById('fly3').disabled = false;
+    draw();
+  });
+
+  draw();
+})();
+</script>
+
+</body>
+</html>
