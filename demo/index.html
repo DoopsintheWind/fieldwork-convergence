@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fieldwork: A Qualitative Methods Demo</title>
 <meta name="description" content="A 6-minute interactive demo of a graduate qualitative methods exam. Choose, code, face the ripple. See where real students landed.">
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -456,19 +454,6 @@ p { margin-bottom: 14px; font-size: 17px; }
 </div>
 
 <script>
-// ============ FIREBASE ============
-const firebaseConfig = {
-  apiKey: "AIzaSyAOefbxg1y0lMhOgL1J_xJWlKuczR8GrFk",
-  authDomain: "fieldwork-convergence.firebaseapp.com",
-  databaseURL: "https://fieldwork-convergence-default-rtdb.firebaseio.com",
-  projectId: "fieldwork-convergence"
-};
-let db = null;
-try {
-  firebase.initializeApp(firebaseConfig);
-  db = firebase.database();
-} catch (e) { console.warn("Firebase init failed, falling back to local random", e); }
-
 // ============ REAL COHORT DATA (from PLS511 April 2026, 15 students) ============
 const COHORT = {
   part1: { A: 4, B: 2, C: 1, D: 8 }, // total 15
@@ -640,31 +625,13 @@ function setProgress(pct) {
   document.getElementById("progress").style.width = pct + "%";
 }
 
-// ============ FRONTIER ASSIGNMENT (load-balanced) ============
-async function assignFrontier() {
+// ============ FRONTIER ASSIGNMENT (per-browser rotation, 25% each) ============
+function assignFrontier() {
   const frontiers = ["kaia", "deep_speakers", "root", "beaver"];
-  if (!db) {
-    // fallback: random with localStorage rotation
-    const last = parseInt(localStorage.getItem("demo_last_idx") || "-1", 10);
-    const next = (last + 1) % 4;
-    localStorage.setItem("demo_last_idx", String(next));
-    return frontiers[next];
-  }
-  try {
-    const result = await db.ref("demo/counter").transaction(current => {
-      current = current || {};
-      for (const f of frontiers) current[f] = current[f] || 0;
-      const lowest = frontiers.reduce((a, b) => current[a] <= current[b] ? a : b);
-      current[lowest] = current[lowest] + 1;
-      current._last = lowest;
-      return current;
-    });
-    const committed = result.snapshot.val();
-    return committed._last || frontiers[Math.floor(Math.random() * 4)];
-  } catch (e) {
-    console.warn("Counter failed, random fallback", e);
-    return frontiers[Math.floor(Math.random() * 4)];
-  }
+  const last = parseInt(localStorage.getItem("demo_last_idx") || "-1", 10);
+  const next = (last + 1) % 4;
+  localStorage.setItem("demo_last_idx", String(next));
+  return frontiers[next];
 }
 
 // ============ RENDER ============
@@ -819,14 +786,11 @@ function renderArchive() {
 }
 
 // ============ FLOW ============
-document.getElementById("start-btn").addEventListener("click", async () => {
+document.getElementById("start-btn").addEventListener("click", () => {
   const name = document.getElementById("name-input").value.trim();
   if (!name) { document.getElementById("name-input").focus(); return; }
   state.name = name;
-  const btn = document.getElementById("start-btn");
-  btn.disabled = true; btn.textContent = "Connecting…";
-  state.frontier = await assignFrontier();
-  btn.disabled = false; btn.textContent = "Deploy";
+  state.frontier = assignFrontier();
   renderAssignment();
   setProgress(16);
   go("screen-assignment");
