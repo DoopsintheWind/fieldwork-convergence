@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# Working drafts and notes
+*.swp
+*~
+status.md
+Status.md
+
+# Old root-level images folder (deleted); demo/images/ ships with the demo
+/images/

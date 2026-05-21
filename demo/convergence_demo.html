@@ -1,0 +1,2472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fieldwork: The Convergence / Catalogue Entry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,200..900,0..100,0..1;1,9..144,200..900,0..100,0..1&family=Inter+Tight:ital,wght@0,200..900;1,200..900&family=JetBrains+Mono:ital,wght@0,300..600;1,300..600&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   FIELDWORK / THE CONVERGENCE  ·  EXHIBITION CATALOGUE BUILD
+   Palette: bone, ink, one accent (muted oxblood).
+   Display type: Fraunces variable. Workhorse: Inter Tight.
+   Captions / folio: JetBrains Mono.
+   ===================================================================== */
+
+:root {
+  --bone: #f4f1ec;
+  --bone-warm: #ece7df;
+  --bone-cool: #eae6df;
+  --ink: #0c0c0d;
+  --ink-soft: #1c1c1f;
+  --ink-mute: #4a4a4f;
+  --ink-quiet: #75757a;
+  --rule: #c8c2b6;
+  --rule-soft: #d8d3c8;
+  --accent: #8a2a2a;          /* muted oxblood */
+  --accent-deep: #6a1f1f;
+  --paper: #fbfaf6;
+  --hairline: rgba(12,12,13,0.12);
+  --shadow: rgba(12,12,13,0.07);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: auto; }
+html, body {
+  background: var(--bone);
+  color: var(--ink);
+  font-family: 'Inter Tight', system-ui, -apple-system, sans-serif;
+  font-size: 17px;
+  line-height: 1.55;
+  font-weight: 360;
+  letter-spacing: 0.005em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Selection. Quiet. */
+::selection { background: var(--ink); color: var(--bone); }
+
+/* =====================================================================
+   FOCUS RINGS · drawn, not browser-default.
+   ===================================================================== */
+:focus { outline: none; }
+:focus-visible {
+  outline: 1.5px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 1px;
+}
+
+/* =====================================================================
+   PAGE FURNITURE · folio marks, running heads.
+   Fixed corners. Reads like the chrome of a catalogue.
+   ===================================================================== */
+.folio {
+  position: fixed;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-quiet);
+  z-index: 80;
+  pointer-events: none;
+  font-weight: 400;
+}
+.folio--tl { top: 1.4rem; left: 1.6rem; }
+.folio--tr { top: 1.4rem; right: 1.6rem; text-align: right; }
+.folio--bl { bottom: 1.4rem; left: 1.6rem; }
+.folio--br { bottom: 1.4rem; right: 1.6rem; text-align: right; }
+
+.folio strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+.folio .accent-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--accent);
+  margin-right: 0.5rem;
+  vertical-align: 1px;
+}
+
+@media (max-width: 720px) {
+  .folio--tr, .folio--br { display: none; }
+  .folio--tl, .folio--bl { font-size: 9.5px; }
+  .folio--tl { left: 1rem; top: 1rem; }
+  .folio--bl { left: 1rem; bottom: 1rem; }
+}
+
+/* =====================================================================
+   SCENE SYSTEM
+   Each scene is a full-height page. Slow letterform fade-in on entry.
+   ===================================================================== */
+.scene {
+  display: none;
+  min-height: 100vh;
+  position: relative;
+  padding: 4rem clamp(1.4rem, 5vw, 5rem) 5rem;
+}
+.scene.active { display: block; }
+
+@keyframes pageEnter {
+  0%   { opacity: 0; }
+  60%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+@keyframes letterRise {
+  from { opacity: 0; transform: translateY(0.4em); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes ruleDraw {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+@keyframes softFade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.scene.active > * { animation: pageEnter 700ms ease-out both; }
+
+/* Stagger. Each direct child of .stagger fades in a beat later. */
+.scene.active .stagger > * {
+  opacity: 0;
+  animation: rise 850ms cubic-bezier(0.16, 0.84, 0.32, 1) forwards;
+}
+.scene.active .stagger > *:nth-child(1) { animation-delay: 0ms; }
+.scene.active .stagger > *:nth-child(2) { animation-delay: 120ms; }
+.scene.active .stagger > *:nth-child(3) { animation-delay: 240ms; }
+.scene.active .stagger > *:nth-child(4) { animation-delay: 360ms; }
+.scene.active .stagger > *:nth-child(5) { animation-delay: 480ms; }
+.scene.active .stagger > *:nth-child(6) { animation-delay: 600ms; }
+.scene.active .stagger > *:nth-child(7) { animation-delay: 720ms; }
+.scene.active .stagger > *:nth-child(8) { animation-delay: 840ms; }
+.scene.active .stagger > *:nth-child(9) { animation-delay: 960ms; }
+
+.drawn-rule {
+  display: block;
+  height: 1px;
+  background: var(--ink);
+  transform-origin: left;
+  animation: ruleDraw 1100ms cubic-bezier(0.16, 0.84, 0.32, 1) both;
+}
+.drawn-rule--accent { background: var(--accent); }
+
+/* =====================================================================
+   TYPOGRAPHY · primary design element.
+   Fraunces variable used at display scale, with WONK + SOFT axes nudged
+   for editorial bite. Inter Tight handles body.
+   ===================================================================== */
+
+.display {
+  font-family: 'Fraunces', 'Times New Roman', serif;
+  font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 1;
+  font-weight: 320;
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+.display-italic {
+  font-style: italic;
+  font-variation-settings: "opsz" 144, "SOFT" 60, "WONK" 1;
+}
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.eyebrow .square {
+  display: inline-block;
+  width: 8px; height: 8px;
+  background: var(--accent);
+}
+.eyebrow .num {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.label--accent { color: var(--accent); }
+
+.lede {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 36, "SOFT" 40;
+  font-weight: 340;
+  font-style: italic;
+  color: var(--ink);
+  line-height: 1.32;
+  letter-spacing: -0.01em;
+}
+
+.body-text {
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 360;
+  font-size: clamp(15.5px, 1.1vw, 17px);
+  line-height: 1.65;
+  color: var(--ink-soft);
+  letter-spacing: 0.003em;
+}
+.body-text p + p { margin-top: 1.1em; }
+
+.body-serif {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 14, "SOFT" 50;
+  font-weight: 360;
+  font-size: clamp(16px, 1.15vw, 17.5px);
+  line-height: 1.62;
+  color: var(--ink);
+  letter-spacing: -0.001em;
+}
+.body-serif p + p { margin-top: 1.05em; }
+
+/* =====================================================================
+   SCENE 1 · LANDING / COVER PLATE
+   First impression. Treated as a book cover. Massive italic title set
+   asymmetrically. Colophon-style metadata up top. Name input drawn as
+   a single line, with the entry number set in monospace beside it.
+   ===================================================================== */
+
+.cover {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr auto;
+  min-height: calc(100vh - 9rem);
+  max-width: 1440px;
+  margin: 0 auto;
+  gap: 0;
+  position: relative;
+}
+
+.cover-top {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+  padding-top: 1.5rem;
+  gap: 2rem;
+}
+.cover-top-left .label { display: block; margin-bottom: 0.55rem; }
+.cover-top-left .essa {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 30, "SOFT" 30;
+  font-weight: 380;
+  font-style: italic;
+  color: var(--ink);
+  font-size: 18px;
+  letter-spacing: -0.005em;
+}
+.cover-top-center .seal {
+  width: 88px; height: 88px;
+  background-image: url('./images/essa_emblem.png');
+  background-size: cover;
+  background-position: center;
+  background-color: transparent;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  position: relative;
+  filter: grayscale(1) contrast(1.05);
+  opacity: 0.92;
+}
+.cover-top-center .seal.no-emblem {
+  background-image: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  filter: none;
+}
+.cover-top-center .seal.no-emblem::after {
+  content: "ESSA";
+  font-style: italic;
+}
+.cover-top-right {
+  text-align: right;
+}
+.cover-top-right .label { display: block; margin-bottom: 0.55rem; }
+.cover-top-right .meta-stack {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--ink-soft);
+  letter-spacing: 0.04em;
+  line-height: 1.65;
+}
+
+.cover-main {
+  padding: clamp(2rem, 8vh, 6rem) 0 2rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+}
+
+.cover-title {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 1;
+  font-weight: 280;
+  line-height: 0.88;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+}
+.cover-title-1 {
+  font-size: clamp(3.6rem, 12vw, 11rem);
+  font-weight: 300;
+  display: block;
+  margin-left: -0.05em;
+}
+.cover-title-2 {
+  font-style: italic;
+  font-variation-settings: "opsz" 144, "SOFT" 70, "WONK" 1;
+  font-size: clamp(4.4rem, 15vw, 14rem);
+  font-weight: 280;
+  display: block;
+  text-align: right;
+  margin-top: -0.05em;
+  margin-right: -0.02em;
+  letter-spacing: -0.045em;
+}
+.cover-title-2 em {
+  font-style: italic;
+}
+
+.cover-subtitle-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 2rem;
+  margin-top: clamp(1.5rem, 4vh, 3rem);
+}
+.cover-subtitle {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 24, "SOFT" 40;
+  font-weight: 360;
+  font-style: italic;
+  color: var(--ink-soft);
+  font-size: clamp(15px, 1.4vw, 19px);
+  max-width: 30ch;
+  line-height: 1.35;
+}
+.cover-edition {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-quiet);
+  text-align: right;
+  line-height: 1.5;
+}
+.cover-edition strong { color: var(--ink); }
+
+/* The entry form · drawn line, monospace entry number, name in editorial italic */
+.cover-bottom {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  padding-top: clamp(2rem, 6vh, 4rem);
+  border-top: 1px solid var(--hairline);
+  margin-top: clamp(2rem, 6vh, 4rem);
+}
+
+.entry-form {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: end;
+  gap: 1.5rem;
+  max-width: 760px;
+}
+.entry-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  padding-bottom: 0.85rem;
+  white-space: nowrap;
+}
+.entry-num strong { color: var(--accent); font-weight: 500; }
+.name-field {
+  position: relative;
+}
+.name-field-label {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-bottom: 0.45rem;
+}
+.name-input {
+  appearance: none;
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid var(--ink);
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 36, "SOFT" 50;
+  font-weight: 360;
+  font-style: italic;
+  font-size: clamp(20px, 2.2vw, 28px);
+  color: var(--ink);
+  padding: 0.4rem 0 0.55rem;
+  width: 100%;
+  outline: none;
+  letter-spacing: -0.005em;
+  transition: border-color 350ms ease;
+}
+.name-input::placeholder {
+  color: var(--ink-quiet);
+  opacity: 0.55;
+  font-style: italic;
+}
+.name-input:focus {
+  border-color: var(--accent);
+}
+.name-error {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--accent);
+  margin-top: 0.6rem;
+  min-height: 1em;
+  opacity: 0;
+  transition: opacity 250ms ease;
+  letter-spacing: 0.005em;
+}
+.name-error.show { opacity: 1; }
+
+/* =====================================================================
+   BUTTONS
+   The frame is the design. Underline-on-hover, slow.
+   ===================================================================== */
+.btn {
+  position: relative;
+  appearance: none;
+  background: transparent;
+  border: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink);
+  padding: 1rem 0 0.85rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  transition: color 350ms ease;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.btn::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 1px;
+  width: 100%;
+  background: var(--ink);
+  transform-origin: right;
+  transform: scaleX(1);
+  transition: transform 500ms cubic-bezier(0.16, 0.84, 0.32, 1);
+}
+.btn:hover::after {
+  transform-origin: left;
+  transform: scaleX(1);
+}
+.btn .arrow {
+  font-family: 'Fraunces', serif;
+  font-style: normal;
+  font-weight: 300;
+  font-size: 18px;
+  letter-spacing: 0;
+  transform: translateX(0);
+  transition: transform 350ms cubic-bezier(0.16, 0.84, 0.32, 1);
+}
+.btn:hover .arrow { transform: translateX(6px); }
+.btn:hover { color: var(--accent); }
+.btn:hover::after { background: var(--accent); }
+
+.btn--ghost {
+  font-size: 10.5px;
+  color: var(--ink-mute);
+  letter-spacing: 0.2em;
+}
+.btn--ghost::after { background: var(--rule); }
+.btn--ghost:hover { color: var(--ink); }
+.btn--ghost:hover::after { background: var(--ink); }
+
+/* =====================================================================
+   SCENE 2 · WORLD INTRO / PREAMBLE
+   Two-column layout, marginalia, asymmetric image plate.
+   ===================================================================== */
+
+.spread {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 5vw, 4rem);
+}
+
+.spread-head {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.6rem;
+  padding-bottom: 1.4rem;
+}
+.spread-head-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.spread-title {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 1;
+  font-weight: 290;
+  font-size: clamp(2.6rem, 8.5vw, 7rem);
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  max-width: 14ch;
+}
+.spread-title em {
+  font-style: italic;
+  font-variation-settings: "opsz" 144, "SOFT" 70, "WONK" 1;
+  font-weight: 290;
+}
+.spread-subtitle {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-variation-settings: "opsz" 30, "SOFT" 40;
+  font-weight: 360;
+  color: var(--ink-mute);
+  font-size: clamp(15px, 1.2vw, 18px);
+  margin-top: 0.6rem;
+  letter-spacing: -0.005em;
+  max-width: 40ch;
+}
+
+.world-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+}
+@media (min-width: 980px) {
+  .world-body {
+    grid-template-columns: 1.2fr 1fr;
+  }
+  .world-body .col-text { padding-right: 2rem; }
+}
+
+/* =====================================================================
+   PLATES · image treatment, exhibition style.
+   Caption sidebar with plate number, title, medium-equivalent.
+   ===================================================================== */
+
+.plate {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  position: relative;
+  animation: softFade 1200ms ease-out both;
+}
+.plate-frame {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background: var(--bone-cool);
+  position: relative;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  filter: grayscale(0.95) contrast(1.04) brightness(0.97);
+  transition: filter 1.6s ease;
+}
+.plate:hover .plate-frame {
+  filter: grayscale(0.7) contrast(1.06) brightness(0.99);
+}
+.plate-frame.no-image {
+  background:
+    linear-gradient(140deg, var(--bone-warm) 0%, var(--bone-cool) 60%, var(--rule-soft) 100%);
+  filter: none;
+}
+.plate-frame.no-image::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0,
+      transparent 18px,
+      rgba(12,12,13,0.04) 18px,
+      rgba(12,12,13,0.04) 19px
+    );
+}
+.plate-frame.no-image::after {
+  content: attr(data-alt);
+  position: absolute;
+  inset: 12% 14%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-variation-settings: "opsz" 24, "SOFT" 50;
+  font-size: 14px;
+  color: var(--ink-mute);
+  line-height: 1.45;
+  border: 1px solid var(--rule);
+  padding: 1.5rem;
+}
+
+.plate--wide .plate-frame { aspect-ratio: 16 / 10; }
+.plate--portrait .plate-frame { aspect-ratio: 3 / 4; }
+.plate--square .plate-frame { aspect-ratio: 1 / 1; }
+.plate--cinema .plate-frame { aspect-ratio: 21 / 9; }
+
+.plate-caption {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--hairline);
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink-mute);
+}
+.plate-caption .plate-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding-top: 1px;
+}
+.plate-caption .plate-text strong {
+  color: var(--ink);
+  font-weight: 500;
+  display: block;
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 14, "SOFT" 40;
+  font-size: 14.5px;
+  line-height: 1.35;
+  font-weight: 400;
+  font-style: italic;
+  margin-bottom: 0.25rem;
+  color: var(--ink);
+}
+
+/* =====================================================================
+   MARGINALIA · pull quotes and notes treated as design elements.
+   ===================================================================== */
+
+.marginalia {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 1.2rem;
+  padding: 1.2rem 0;
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+  margin: 2rem 0;
+}
+.marginalia-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding-top: 0.45rem;
+}
+.marginalia-text {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 30, "SOFT" 50;
+  font-weight: 350;
+  font-style: italic;
+  font-size: clamp(17px, 1.5vw, 22px);
+  line-height: 1.35;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+}
+.marginalia-attr {
+  display: block;
+  margin-top: 0.85rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-style: normal;
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  font-weight: 400;
+}
+
+/* =====================================================================
+   SCENE 3 · FRONTIER SELECTION
+   Two pages of a monograph spread. Recto / verso treatment.
+   Each plate is full-bleed within its column, with running plate number.
+   ===================================================================== */
+
+.frontier-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 4vw, 3rem);
+  max-width: 1440px;
+  margin: 2rem auto 0;
+}
+@media (min-width: 900px) {
+  .frontier-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.frontier-card {
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  grid-template-rows: auto auto auto;
+  gap: 1.2rem;
+  position: relative;
+  transition: opacity 500ms ease;
+}
+.frontier-card:hover .frontier-img {
+  filter: grayscale(0) contrast(1.05) brightness(1);
+}
+.frontier-card:hover .frontier-title { color: var(--accent); }
+.frontier-card:hover .frontier-arrow { transform: translateX(8px); }
+
+.frontier-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--ink);
+  gap: 1rem;
+}
+.frontier-num {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 144, "SOFT" 20;
+  font-weight: 280;
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  line-height: 0.85;
+  color: var(--ink);
+  letter-spacing: -0.04em;
+}
+.frontier-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  text-align: right;
+  line-height: 1.5;
+}
+.frontier-tag strong { color: var(--accent); font-weight: 500; }
+
+.frontier-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background: var(--bone-cool);
+  background-size: cover;
+  background-position: center;
+  filter: grayscale(0.9) contrast(1.03) brightness(0.97);
+  transition: filter 1.8s ease;
+  position: relative;
+}
+.frontier-img.no-image {
+  background:
+    linear-gradient(160deg, var(--bone-warm) 0%, var(--bone-cool) 55%, var(--rule-soft) 100%);
+  filter: none;
+}
+.frontier-img.no-image::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      transparent 0,
+      transparent 14px,
+      rgba(12,12,13,0.035) 14px,
+      rgba(12,12,13,0.035) 15px
+    );
+}
+.frontier-img.no-image::after {
+  content: attr(data-alt);
+  position: absolute;
+  inset: 14% 16%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 13px;
+  color: var(--ink-mute);
+  line-height: 1.45;
+  border: 1px solid var(--rule);
+  padding: 1.2rem;
+}
+
+.frontier-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.8rem;
+}
+.frontier-title {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 60, "SOFT" 30;
+  font-weight: 310;
+  font-size: clamp(1.9rem, 3.5vw, 3rem);
+  line-height: 1;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  transition: color 400ms ease;
+}
+.frontier-title em { font-style: italic; }
+.frontier-blurb {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  font-weight: 360;
+  max-width: 42ch;
+}
+.frontier-cta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding-top: 0.4rem;
+}
+.frontier-arrow {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 300;
+  display: inline-block;
+  transition: transform 380ms cubic-bezier(0.16, 0.84, 0.32, 1);
+  letter-spacing: 0;
+}
+
+/* =====================================================================
+   SCENE 4 · BRIEFING (catalogue entry)
+   Asymmetric grid: text column / plate column, with running notes
+   in the gutter.
+   ===================================================================== */
+
+.entry {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 4vw, 4rem);
+}
+
+.entry-head {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 1.4rem;
+}
+.entry-head-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+  flex-wrap: wrap;
+}
+.entry-title {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 1;
+  font-weight: 280;
+  font-size: clamp(2.4rem, 7vw, 6rem);
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  max-width: 14ch;
+}
+.entry-title em {
+  font-style: italic;
+  font-variation-settings: "opsz" 144, "SOFT" 80, "WONK" 1;
+}
+.entry-sub {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 30, "SOFT" 40;
+  font-weight: 360;
+  font-style: italic;
+  color: var(--ink-mute);
+  font-size: clamp(15px, 1.25vw, 18px);
+  margin-top: 0.5rem;
+  letter-spacing: -0.005em;
+  max-width: 50ch;
+}
+
+.entry-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+}
+@media (min-width: 980px) {
+  .entry-body {
+    grid-template-columns: 1.05fr 1fr;
+  }
+  .entry-body--reverse { grid-template-columns: 1fr 1.05fr; }
+  .entry-body--reverse .col-plate { order: -1; }
+}
+
+.col-text { min-width: 0; }
+.col-plate { min-width: 0; position: relative; }
+@media (min-width: 980px) {
+  .col-plate { padding-top: 2.2rem; }
+}
+
+/* Decoration · small line breaks between paragraphs */
+.small-rule {
+  display: block;
+  height: 1px;
+  width: 60px;
+  background: var(--accent);
+  margin: 1.6rem 0;
+}
+
+/* =====================================================================
+   SCENE 5/7 · SCENARIO + MCQ
+   The scenario sits in a large serif lede. The MCQ is set in a
+   numbered list with deliberate typographic hierarchy. Each option
+   has a hairline underline that fills on hover.
+   ===================================================================== */
+
+.scenario {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 4vw, 3.5rem);
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.scenario-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+}
+@media (min-width: 980px) {
+  .scenario-body {
+    grid-template-columns: 1fr 1.05fr;
+  }
+}
+
+.scenario-text {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 30, "SOFT" 40;
+  font-weight: 360;
+  font-size: clamp(17px, 1.55vw, 22px);
+  line-height: 1.4;
+  color: var(--ink);
+  letter-spacing: -0.008em;
+}
+.scenario-text p + p { margin-top: 1em; }
+
+/* MCQ */
+.mcq-wrap {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  border-top: 1px solid var(--ink);
+  margin-top: clamp(2rem, 4vw, 3rem);
+}
+.mcq-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  padding: 1.2rem 0 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.mcq-title .square {
+  width: 8px; height: 8px;
+  background: var(--accent);
+  display: inline-block;
+}
+
+.mcq {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  padding: 0;
+  margin: 0;
+}
+.mcq-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 60px 1fr 40px;
+  gap: 1.2rem;
+  align-items: baseline;
+  padding: 1.6rem 0;
+  border-bottom: 1px solid var(--hairline);
+  cursor: pointer;
+  appearance: none;
+  background: transparent;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
+  width: 100%;
+  transition: all 500ms cubic-bezier(0.16, 0.84, 0.32, 1);
+}
+.mcq-item::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 1px;
+  background: var(--ink);
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 600ms cubic-bezier(0.16, 0.84, 0.32, 1);
+}
+.mcq-item:hover::after { transform: scaleX(1); }
+.mcq-item:hover { padding-left: 0.6rem; }
+.mcq-item:hover .mcq-letter { color: var(--accent); }
+.mcq-item:hover .mcq-arrow { transform: translateX(6px); color: var(--accent); }
+.mcq-item:focus-visible {
+  outline: 1.5px solid var(--accent);
+  outline-offset: 6px;
+}
+
+.mcq-letter {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 60, "SOFT" 30;
+  font-weight: 320;
+  font-style: italic;
+  font-size: clamp(2.2rem, 3vw, 3rem);
+  line-height: 1;
+  color: var(--ink);
+  letter-spacing: -0.04em;
+  align-self: start;
+  transition: color 400ms ease;
+}
+.mcq-text {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 24, "SOFT" 40;
+  font-weight: 380;
+  font-size: clamp(15.5px, 1.2vw, 18px);
+  line-height: 1.4;
+  color: var(--ink);
+  letter-spacing: -0.003em;
+  padding-top: 0.65rem;
+}
+.mcq-arrow {
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--ink-mute);
+  transition: all 380ms cubic-bezier(0.16, 0.84, 0.32, 1);
+  align-self: center;
+  text-align: right;
+  font-weight: 300;
+}
+
+/* =====================================================================
+   SCENE 6 · INTERMEDIARY
+   The moment between exhibition rooms. Maximum negative space.
+   A single thin line that fills over 10 seconds. Two rotating notes.
+   ===================================================================== */
+
+.intermission {
+  max-width: 1100px;
+  margin: 0 auto;
+  min-height: calc(100vh - 9rem);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 2rem;
+}
+
+.intermission-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1.5rem;
+  padding-top: 1rem;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 1.4rem;
+  flex-wrap: wrap;
+}
+.intermission-head h2 {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 1;
+  font-weight: 280;
+  font-style: italic;
+  font-size: clamp(2.2rem, 5.5vw, 5rem);
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+}
+
+.intermission-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 4vw, 4rem);
+  align-content: center;
+  padding: clamp(3rem, 8vw, 7rem) 0;
+}
+@media (min-width: 900px) {
+  .intermission-body {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    gap: clamp(4rem, 9vw, 9rem);
+  }
+}
+
+.intermission-note {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 2rem;
+  padding-top: 0.4rem;
+}
+.intermission-note-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding-top: 0.4rem;
+}
+.intermission-note-text {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 30, "SOFT" 50;
+  font-weight: 360;
+  font-style: italic;
+  font-size: clamp(17px, 1.55vw, 22px);
+  line-height: 1.4;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+  min-height: 8em;
+  transition: opacity 500ms ease;
+}
+.intermission-note-text.fading { opacity: 0; }
+
+.intermission-foot {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.4rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--hairline);
+}
+.intermission-foot-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  flex-wrap: wrap;
+}
+
+.progress-track {
+  position: relative;
+  height: 1px;
+  background: var(--rule);
+  overflow: hidden;
+}
+.progress-fill {
+  position: absolute;
+  left: 0; top: 0;
+  height: 100%;
+  width: 100%;
+  background: var(--accent);
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 10s linear;
+}
+.progress-fill.run { transform: scaleX(1); }
+
+.progress-counter {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* =====================================================================
+   SCENE 8 · DEBRIEF / COLOPHON
+   The final page of the monograph. Bibliographic registration of
+   the deployment. Recap as a numbered list. Closing as an
+   exhibition end-card.
+   ===================================================================== */
+
+.debrief {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 4vw, 3rem);
+}
+
+.debrief-head {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 1.4rem;
+}
+.debrief-headline {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 144, "SOFT" 30, "WONK" 1;
+  font-weight: 280;
+  font-size: clamp(2.6rem, 8vw, 7rem);
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+  max-width: 18ch;
+}
+.debrief-headline em {
+  font-style: italic;
+  font-variation-settings: "opsz" 144, "SOFT" 80, "WONK" 1;
+}
+.debrief-meta {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.45rem;
+  margin-top: 0.6rem;
+}
+.debrief-meta-row {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 1.2rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+.debrief-meta-row .label-cell {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--ink-mute);
+  font-size: 10.5px;
+  padding-top: 1px;
+}
+
+.debrief-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+}
+@media (min-width: 980px) {
+  .debrief-body {
+    grid-template-columns: 1fr 1.15fr;
+  }
+}
+
+.debrief-recap {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.4rem;
+  padding-bottom: 1.4rem;
+}
+.recap-item {
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  gap: 1.2rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--hairline);
+}
+.recap-item:first-child { border-top: none; padding-top: 0; }
+.recap-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding-top: 0.4rem;
+}
+.recap-text {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 24, "SOFT" 50;
+  font-weight: 360;
+  font-style: italic;
+  font-size: clamp(15.5px, 1.2vw, 18px);
+  line-height: 1.5;
+  color: var(--ink);
+  letter-spacing: -0.003em;
+}
+
+.debrief-prose {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 18, "SOFT" 50;
+  font-weight: 380;
+  font-size: clamp(16px, 1.25vw, 19px);
+  line-height: 1.6;
+  color: var(--ink);
+  letter-spacing: -0.003em;
+}
+.debrief-prose p::first-letter {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 144, "SOFT" 20;
+  font-weight: 280;
+  float: left;
+  font-size: 4.2em;
+  line-height: 0.82;
+  padding: 0.08em 0.15em 0 0;
+  color: var(--ink);
+  font-style: normal;
+}
+
+.debrief-closing {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  padding: clamp(2rem, 4vw, 3rem) 0;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.8rem;
+  text-align: left;
+}
+.closing-pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.closing-line {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 144, "SOFT" 60, "WONK" 1;
+  font-weight: 290;
+  font-style: italic;
+  font-size: clamp(1.6rem, 4vw, 3.2rem);
+  line-height: 1.1;
+  color: var(--ink);
+  letter-spacing: -0.025em;
+  max-width: 24ch;
+}
+
+.debrief-foot {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.4rem;
+  padding-top: 2rem;
+}
+@media (min-width: 720px) {
+  .debrief-foot {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+  }
+}
+.debrief-foot .note {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-variation-settings: "opsz" 18, "SOFT" 40;
+  font-weight: 360;
+  font-size: 14.5px;
+  color: var(--ink-mute);
+  max-width: 44ch;
+  line-height: 1.4;
+}
+
+/* =====================================================================
+   ACCESSIBILITY
+   ===================================================================== */
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .progress-fill { transition: none; }
+}
+
+/* =====================================================================
+   RESPONSIVE TIGHTENING
+   ===================================================================== */
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  .scene { padding: 3rem 1.2rem 4rem; }
+  .cover-top { grid-template-columns: 1fr; gap: 1rem; }
+  .cover-top-right { text-align: left; }
+  .cover-top-center { justify-self: start; }
+  .cover-top-center .seal { width: 56px; height: 56px; }
+  .cover-subtitle-row { grid-template-columns: 1fr; gap: 1.5rem; }
+  .cover-edition { text-align: left; }
+  .entry-form { grid-template-columns: 1fr; gap: 1rem; }
+  .entry-num { padding-bottom: 0; }
+  .frontier-head { padding-bottom: 0.6rem; }
+  .mcq-item { grid-template-columns: 44px 1fr 30px; gap: 0.8rem; padding: 1.2rem 0; }
+  .mcq-letter { font-size: 1.8rem; }
+  .recap-item { grid-template-columns: 38px 1fr; gap: 0.8rem; }
+  .debrief-meta-row { grid-template-columns: 90px 1fr; gap: 0.8rem; }
+  .intermission-note { grid-template-columns: 90px 1fr; gap: 1rem; }
+  .plate-caption { grid-template-columns: 54px 1fr; gap: 0.7rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- =====================================================================
+     PAGE FURNITURE · folio, running heads. Always visible.
+     ===================================================================== -->
+<div class="folio folio--tl" id="folio-tl">
+  <span class="accent-dot"></span><strong>FW/CV</strong> · Catalogue №&nbsp;001
+</div>
+<div class="folio folio--tr" id="folio-tr">
+  Earth Social Science Academia · Geneva
+</div>
+<div class="folio folio--bl" id="folio-bl">
+  Volume I · Public Demonstration
+</div>
+<div class="folio folio--br" id="folio-br">
+  <span id="folio-page">000 / 008</span>
+</div>
+
+
+<!-- =====================================================================
+     SCENE 1 · LANDING · Cover plate
+     ===================================================================== -->
+<section id="scene-landing" class="scene active" aria-label="Cover">
+  <div class="cover stagger">
+
+    <div class="cover-top">
+      <div class="cover-top-left">
+        <div class="label">Earth Social Science Academia</div>
+        <div class="essa">Established Geneva, 2088</div>
+      </div>
+      <div class="cover-top-center">
+        <div class="seal" id="cover-seal" aria-hidden="true"></div>
+      </div>
+      <div class="cover-top-right">
+        <div class="label">Catalogue Entry</div>
+        <div class="meta-stack">
+          FW/CV · 001<br>
+          Public Demonstration<br>
+          Volume I of IV
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-main">
+      <div>
+        <span class="cover-title-1 cover-title">Fieldwork</span>
+        <span class="cover-title-2 cover-title"><em>The Convergence</em></span>
+      </div>
+    </div>
+
+    <div class="cover-subtitle-row">
+      <div class="cover-subtitle">
+        Four months at a frontier. One name on the deployment record. Choose what you do with what you find there.
+      </div>
+      <div class="cover-edition">
+        Demonstration Edition<br>
+        <strong>Anno 2100</strong>
+      </div>
+    </div>
+
+    <div class="cover-bottom">
+      <div class="entry-form">
+        <div class="entry-num">Entry №&nbsp;<strong>···</strong></div>
+        <div class="name-field">
+          <label for="player-name" class="name-field-label">Sign the deployment record</label>
+          <input id="player-name" class="name-input" type="text" placeholder="your name" autocomplete="off" maxlength="60" aria-label="Your name" spellcheck="false">
+          <div class="name-error" id="name-error" role="alert">A name is required to begin.</div>
+        </div>
+        <button class="btn" id="begin-btn" type="button">
+          <span>Enter</span><span class="arrow" aria-hidden="true">&#8594;</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- =====================================================================
+     SCENE 2 · WORLD INTRO · Preamble
+     ===================================================================== -->
+<section id="scene-world" class="scene" aria-label="Preamble">
+  <div class="spread stagger">
+
+    <div class="spread-head">
+      <div class="spread-head-meta">
+        <div class="eyebrow"><span class="square"></span><span class="num">001 / 008</span><span>Preamble</span></div>
+        <div class="label">Anno 2100</div>
+      </div>
+      <h2 class="spread-title">The world, <em>in brief.</em></h2>
+      <p class="spread-subtitle">Earth, after the four recognition events. A note to the visitor before any deployment begins.</p>
+    </div>
+
+    <span class="drawn-rule"></span>
+
+    <div class="world-body">
+      <div class="col-text body-serif">
+        <p>The year is 2100. Earth has lived through four recognition events. In 2055, mycorrhizal researchers confirmed that forests route information at scales no single organism could account for. They called it the Root Network. In 2062, sperm whale pods won political recognition under the Cetacean Sovereignty Accords. In 2068, beavers were recognised as a non-human engineering intelligence, against fierce political opposition. In 2075, the Kaia, a collective-resonance species from the Kepler-442 system, made formal contact.</p>
+
+        <p>Earth Social Science Academia, ESSA, was founded in 2088 to study the four frontiers as one family of problems. Researchers work four-month deployments under frontier-specific consent protocols and submit mission logs to the Convergence Ethics Panel.</p>
+
+        <p>You have been deployed. Your name has been logged. Pick a frontier.</p>
+
+        <div style="margin-top: 2.2rem;">
+          <button class="btn" type="button" data-next="scene-frontier-select">
+            <span>Continue to selection</span><span class="arrow" aria-hidden="true">&#8594;</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="col-plate">
+        <div class="plate plate--portrait">
+          <div class="plate-frame no-image" data-img="world_2100_hero.png" data-alt="Earth from orbit, with the four recognised frontiers marked."></div>
+          <div class="plate-caption">
+            <div class="plate-num">Plate&nbsp;I</div>
+            <div class="plate-text"><strong>Earth from orbit, c. 2100.</strong>The four recognised frontiers, faintly marked. Reproduced under the Convergence Ethics Panel public archive.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- =====================================================================
+     SCENE 3 · FRONTIER SELECTION · Two pages of a monograph spread
+     ===================================================================== -->
+<section id="scene-frontier-select" class="scene" aria-label="Frontier selection">
+  <div class="spread stagger">
+
+    <div class="spread-head">
+      <div class="spread-head-meta">
+        <div class="eyebrow"><span class="square"></span><span class="num">002 / 008</span><span>Selection</span></div>
+        <div class="label">Open frontiers · two of four</div>
+      </div>
+      <h2 class="spread-title">Pick a <em>frontier.</em></h2>
+      <p class="spread-subtitle">Two are open for this demonstration. The full exam covers all four. Make the call you would have made.</p>
+    </div>
+
+    <span class="drawn-rule"></span>
+
+    <div class="frontier-grid">
+
+      <button class="frontier-card" type="button" data-frontier="beaver" aria-label="Choose the Beaver Frontier">
+        <div class="frontier-head">
+          <div class="frontier-num">I</div>
+          <div class="frontier-tag">Field site / <strong>North</strong><br>Boreal Canada</div>
+        </div>
+        <div class="frontier-img no-image" data-img="frontier_beaver_select.png" data-alt="Boreal forest. Dam. Water moving slow."></div>
+        <div class="frontier-body">
+          <h3 class="frontier-title">The Beaver Frontier</h3>
+          <p class="frontier-blurb">Boreal watersheds in northern Canada. Beavers engineering across generations. The youngest and most contested recognition.</p>
+          <div class="frontier-cta">
+            <span>Enter the field</span>
+            <span class="frontier-arrow" aria-hidden="true">&#8594;</span>
+          </div>
+        </div>
+      </button>
+
+      <button class="frontier-card" type="button" data-frontier="kaia" aria-label="Choose the Kaia Frontier">
+        <div class="frontier-head">
+          <div class="frontier-num">II</div>
+          <div class="frontier-tag">Field site / <strong>Off-world</strong><br>Aelion diplomatic zone</div>
+        </div>
+        <div class="frontier-img no-image" data-img="frontier_kaia_select.png" data-alt="Translucent biomineral architecture in amber and gold."></div>
+        <div class="frontier-body">
+          <h3 class="frontier-title">The Kaia Frontier</h3>
+          <p class="frontier-blurb">An alien civilisation that communicates through collective resonance. The newest and most cognitively unfamiliar frontier. Translucent architecture in amber and gold.</p>
+          <div class="frontier-cta">
+            <span>Enter the field</span>
+            <span class="frontier-arrow" aria-hidden="true">&#8594;</span>
+          </div>
+        </div>
+      </button>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- =====================================================================
+     SCENE 4 · BRIEFING · Catalogue entry
+     ===================================================================== -->
+<section id="scene-briefing" class="scene" aria-label="Briefing">
+  <div class="entry stagger">
+
+    <div class="entry-head">
+      <div class="entry-head-row">
+        <div class="eyebrow"><span class="square"></span><span class="num">003 / 008</span><span id="briefing-section-label">Briefing</span></div>
+        <div class="label" id="briefing-folio">Plate&nbsp;II · Catalogue Entry</div>
+      </div>
+      <h2 class="entry-title" id="briefing-title">Birch&#8209;9 Station</h2>
+      <p class="entry-sub" id="briefing-sub">A boreal watershed remade by Colony Alpha.</p>
+    </div>
+
+    <div class="entry-body" id="briefing-body-wrap">
+      <div class="col-text">
+        <div id="briefing-body" class="body-serif"></div>
+        <div class="marginalia" id="briefing-marginalia">
+          <div class="marginalia-label">Note</div>
+          <div>
+            <div class="marginalia-text" id="briefing-pull-text"></div>
+            <span class="marginalia-attr" id="briefing-pull-attr"></span>
+          </div>
+        </div>
+        <div style="margin-top: 2rem;">
+          <button class="btn" type="button" data-next="scene-part1">
+            <span>Begin fieldwork</span><span class="arrow" aria-hidden="true">&#8594;</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="col-plate">
+        <div class="plate plate--portrait">
+          <div class="plate-frame no-image" id="briefing-plate" data-img="" data-alt=""></div>
+          <div class="plate-caption">
+            <div class="plate-num">Plate&nbsp;II</div>
+            <div class="plate-text" id="briefing-caption"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- =====================================================================
+     SCENE 5 · PART 1 · Scenario + MCQ
+     ===================================================================== -->
+<section id="scene-part1" class="scene" aria-label="Part one">
+  <div class="scenario stagger">
+
+    <div class="entry-head">
+      <div class="entry-head-row">
+        <div class="eyebrow"><span class="square"></span><span class="num">004 / 008</span><span>Part One · Week One</span></div>
+        <div class="label">Plate&nbsp;III · Scene</div>
+      </div>
+      <h2 class="entry-title" id="part1-title"><em>The first walk.</em></h2>
+    </div>
+
+    <div class="scenario-body">
+      <div class="col-text">
+        <div class="scenario-text" id="part1-scenario"></div>
+        <div class="mcq-wrap">
+          <div class="mcq-title"><span class="square"></span><span>How do you start?</span></div>
+          <div class="mcq" id="part1-mcq" role="radiogroup" aria-label="Part one choices"></div>
+        </div>
+      </div>
+      <div class="col-plate">
+        <div class="plate plate--portrait">
+          <div class="plate-frame no-image" id="part1-plate" data-img="" data-alt=""></div>
+          <div class="plate-caption">
+            <div class="plate-num">Plate&nbsp;III</div>
+            <div class="plate-text" id="part1-caption"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- =====================================================================
+     SCENE 6 · INTERMEDIARY · The moment between rooms
+     ===================================================================== -->
+<section id="scene-intermediary" class="scene" aria-label="Fieldwork loading">
+  <div class="intermission stagger">
+
+    <div class="intermission-head">
+      <h2>The work <em>continues</em>.</h2>
+      <div class="label">005 / 008 · Convergence Network</div>
+    </div>
+
+    <div class="intermission-body">
+      <div class="intermission-note">
+        <div class="intermission-note-label">From the<br>Convergence record</div>
+        <div class="intermission-note-text" id="trivia-text" aria-live="polite">In 2055, the Mycelial Signal Project confirmed that forests route information at scales no individual organism could account for.</div>
+      </div>
+
+      <div class="intermission-note">
+        <div class="intermission-note-label">Other researchers,<br>transmitting</div>
+        <div class="intermission-note-text" id="status-text" aria-live="polite">Researcher at Cedar-6 has submitted Part 1. Their dam-speech data cascades into your Part 2.</div>
+      </div>
+    </div>
+
+    <div class="intermission-foot">
+      <div class="progress-track" aria-hidden="true">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="intermission-foot-row">
+        <span>Holding for Part Two</span>
+        <span class="progress-counter" id="progress-counter">10s</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- =====================================================================
+     SCENE 7 · PART 2 · Scenario + MCQ
+     ===================================================================== -->
+<section id="scene-part2" class="scene" aria-label="Part two">
+  <div class="scenario stagger">
+
+    <div class="entry-head">
+      <div class="entry-head-row">
+        <div class="eyebrow"><span class="square"></span><span class="num">006 / 008</span><span>Part Two · Week Three</span></div>
+        <div class="label">Plate&nbsp;IV · Scene</div>
+      </div>
+      <h2 class="entry-title" id="part2-title"><em>The work shifts.</em></h2>
+    </div>
+
+    <div class="scenario-body">
+      <div class="col-text">
+        <div class="scenario-text" id="part2-scenario"></div>
+        <div class="mcq-wrap">
+          <div class="mcq-title"><span class="square"></span><span>What now?</span></div>
+          <div class="mcq" id="part2-mcq" role="radiogroup" aria-label="Part two choices"></div>
+        </div>
+      </div>
+      <div class="col-plate">
+        <div class="plate plate--portrait">
+          <div class="plate-frame no-image" id="part2-plate" data-img="" data-alt=""></div>
+          <div class="plate-caption">
+            <div class="plate-num">Plate&nbsp;IV</div>
+            <div class="plate-text" id="part2-caption"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- =====================================================================
+     SCENE 8 · DEBRIEF · Colophon, final page
+     ===================================================================== -->
+<section id="scene-debrief" class="scene" aria-label="Debrief">
+  <div class="debrief stagger">
+
+    <div class="debrief-head">
+      <div class="entry-head-row">
+        <div class="eyebrow"><span class="square"></span><span class="num">007 / 008</span><span>Debrief / Colophon</span></div>
+        <div class="label">Plate&nbsp;V · Closing</div>
+      </div>
+      <h2 class="debrief-headline" id="debrief-headline">Four months <em>later.</em></h2>
+      <div class="debrief-meta" id="debrief-meta">
+        <div class="debrief-meta-row">
+          <div class="label-cell">Researcher</div>
+          <div id="meta-researcher"></div>
+        </div>
+        <div class="debrief-meta-row">
+          <div class="label-cell">Station</div>
+          <div id="meta-station"></div>
+        </div>
+        <div class="debrief-meta-row">
+          <div class="label-cell">Outcome</div>
+          <div id="meta-outcome"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="debrief-body">
+      <div class="col-text">
+        <div class="debrief-recap" id="debrief-recap"></div>
+      </div>
+      <div class="col-plate">
+        <div class="plate plate--portrait">
+          <div class="plate-frame no-image" id="debrief-plate" data-img="" data-alt=""></div>
+          <div class="plate-caption">
+            <div class="plate-num">Plate&nbsp;V</div>
+            <div class="plate-text" id="debrief-caption"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="debrief-prose" id="debrief-prose"></div>
+
+    <div class="debrief-closing">
+      <div class="closing-pre" id="closing-pre"></div>
+      <div class="closing-line" id="closing-line"></div>
+    </div>
+
+    <div class="debrief-foot">
+      <p class="note">One of two frontiers. One of sixteen outcomes. The full demonstration covers four.</p>
+      <button class="btn" type="button" id="restart-btn">
+        <span>Return to start</span><span class="arrow" aria-hidden="true">&#8594;</span>
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<script>
+'use strict';
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const state = {
+  name: '',
+  frontier: null,
+  p1: null,
+  p2: null,
+  intermediaryTimer: null,
+  rotateInterval: null,
+  countdownInterval: null
+};
+
+/* ============================================================
+   CONTENT
+   ============================================================ */
+
+const BRIEFINGS = {
+  beaver: {
+    label: 'Briefing · Boreal',
+    title: 'Birch‑9 Station',
+    sub: 'Birch River, early autumn. The boreal forest sits thick around the station.',
+    plate: {
+      img: 'beaver_briefing.png',
+      alt: 'Birch-9 station, boreal forest, the river remade by colonies.',
+      captionTitle: 'Birch‑9 Station, exterior.',
+      captionBody: 'A watershed remade by Colony Alpha. Birch River, late summer. Photographic plate.'
+    },
+    body: function(name) {
+      return [
+        `Welcome, ${name}. You arrive at Birch‑9 station on the Birch River. The boreal forest sits thick around the station. Decades of beaver engineering have remade the river, and you will study the dam-speech of the colonies that did the work. Marie Halloran, the long-time local hydrologist, will be your station guide.`,
+        `You will study Colony Alpha. They hold the gorge dam, a 200-metre structure their lineage has kept for three generations. The dam-speech interface turns their structural decisions into chemical-signal data. Seven downstream colonies depend on Alpha's water, and you will watch how their recent modifications ripple through.`,
+        `The Convergence Ethics Panel has approved your deployment. ESSA's hard-science faction wants clean data. ESSA's interpretive faction, where Marie Halloran sits, wants honest data. The Sovereignty Compact will study what you file.`,
+        `Your supervisor will message regularly. You will spend four months at Birch‑9. The dam-speech interface is calibrated. You are ready to begin.`
+      ];
+    },
+    pullquote: {
+      text: "“They are answering something. But you have to know what was asked.”",
+      attr: "Marie Halloran, station guide"
+    }
+  },
+  kaia: {
+    label: 'Briefing · Aelion',
+    title: 'Resonance House Aelion',
+    sub: 'The Kaia diplomatic zone. Biomineral architecture in amber and gold, lit through.',
+    plate: {
+      img: 'kaia_briefing.png',
+      alt: 'Resonance House Aelion exterior. Biomineral architecture in amber and gold.',
+      captionTitle: 'Resonance House Aelion, exterior.',
+      captionBody: 'The diplomatic zone’s largest research-host station. Afternoon, third quarter. Photographic plate.'
+    },
+    body: function(name) {
+      return [
+        `Welcome, ${name}. You arrive at Resonance House Aelion, the largest research-host station in the Kaia diplomatic zone. The biomineral architecture is translucent in amber and gold, and soft afternoon light comes through everything. Cadence-of-Formal-Silence, your Kaia liaison, will host your sessions.`,
+        `You will study how the Kaia weigh participant consent inside resonance. They do not separate individual consent from House consent the way humans do. One mind cannot disentangle its choices from the resonance field its House sits inside. You are here to study how that gets handled.`,
+        `The Convergence Ethics Panel has approved your deployment. Cadence-of-Formal-Silence chose you because she found your written application “honest about not knowing”. The Sovereignty Compact has reviewers watching how you handle non-human ethics.`,
+        `Your supervisor at ESSA will check in regularly. The Kaia will not. You will spend four months at Aelion. The session schedule is open. Begin when Cadence calls you in.`
+      ];
+    },
+    pullquote: {
+      text: "“Chosen because the written application was honest about not knowing.”",
+      attr: "Cadence-of-Formal-Silence, House liaison"
+    }
+  }
+};
+
+const PART1 = {
+  beaver: {
+    title: '<em>The first walk.</em>',
+    plate: {
+      img: 'beaver_part1.png',
+      alt: 'Colony Alpha gorge dam, fresh mud section visible at the bank.',
+      captionTitle: 'Colony Alpha, gorge dam.',
+      captionBody: 'Three weeks after the latest modifications. Fresh mud at the upstream face. Photographic plate.'
+    },
+    scenario: `First week at Birch‑9. Colony Alpha has made three structural changes to the gorge dam this month. The dam-speech interface translates them as shifts in water flow that ripple through seven downstream colonies. Marie Halloran walks the bank with you and points to fresh mud on the upstream face. “They are answering something,” she says. “But you have to know what was asked.” Your supervisor wants a clean report by month's end. How do you start?`,
+    choices: {
+      A: 'Run the dam-speech interface. Document the structural changes carefully and build your baseline before anything else.',
+      B: 'Walk the watershed with Marie Halloran first. Learn what she sees before turning to the instruments.',
+      C: 'Set up parallel sensor arrays across all seven downstream colonies. Map the full cascade.',
+      D: 'Watch Colony Alpha for a week without measuring anything. Let the rhythm of the work settle first.'
+    }
+  },
+  kaia: {
+    title: '<em>The first listening.</em>',
+    plate: {
+      img: 'kaia_part1.png',
+      alt: 'Cadence-of-Formal-Silence, a translucent Kaia figure, in first listening.',
+      captionTitle: 'Cadence-of-Formal-Silence.',
+      captionBody: 'A first listening. Aelion afternoon. The session opens with a question her culture has carried for centuries.'
+    },
+    scenario: `Cadence-of-Formal-Silence opens your first session with a question she calls a “first listening”. She asks what your name carries. You did not expect the question. In your culture, names do not carry the way she means. Your hesitation is itself an answer she will hear. What do you do?`,
+    choices: {
+      A: 'Pause and answer honestly. Tell her you don’t know what your name carries in her sense, and ask her to explain hers.',
+      B: 'Offer the formal Earth biography you prepared. Institution, training, supervisor, region.',
+      C: 'Stay silent in the way she has asked, then attempt a resonance answer in her register.',
+      D: 'Apologise for not having the right answer and offer to come back to it later in the deployment.'
+    }
+  }
+};
+
+const PART2 = {
+  beaver: {
+    title: '<em>The food cache.</em>',
+    plate: {
+      img: 'beaver_part2.png',
+      alt: 'Flooded food cache zone. Marie Halloran at the bank.',
+      captionTitle: 'Colony Three, food cache zone.',
+      captionBody: 'Submerged deeper than the kits can reach. Marie Halloran at the bank. Three weeks after the repairs.'
+    },
+    scenario: `Three weeks in. Colony Three has lost its winter food cache. The water rose too high too fast after Colony Alpha's repairs. Your data shows clean structural improvement at Colony Three's dam. Marie Halloran walks you down to the cache. The branches the colony pushed into the mud for winter are submerged too deep for the kits to reach. “Your aid helped one family drown another family's winter,” she says. Your supervisor messages: “Numbers look strong. Focus your report there.” What now?`,
+    choices: {
+      A: 'Document the harm honestly. Recommend pausing the aid program until inter-colony water-rights are mapped.',
+      B: 'Frame it as adaptive learning. Keep the program running, note the issue, propose a monitoring fix.',
+      C: 'Co-design new aid criteria with Marie Halloran that respect the connections between colonies.',
+      D: 'Step back. Write a reflexive memo about the assumptions inside your evaluation framework.'
+    }
+  },
+  kaia: {
+    title: '<em>The recordings.</em>',
+    plate: {
+      img: 'kaia_part2.png',
+      alt: 'Kaia council in resonance session, translucent figures in amber light.',
+      captionTitle: 'Council deliberation, recorded outside protocol.',
+      captionBody: 'A junior council member’s recordings of a closed reproductive ethics session. Resonance signatures captured.'
+    },
+    scenario: `A junior Kaia council member shares her own recordings of a closed reproductive ethics deliberation. She is breaking House protocol to share. The recordings would answer your research question. They also capture other council members' resonance without their consent. Cadence-of-Formal-Silence has invited you to a parallel session that may give you the same insight through House-sanctioned channels. What do you do?`,
+    choices: {
+      A: 'Refuse the recordings. Accept Cadence’s House-sanctioned session and what it gives you.',
+      B: 'Accept the recordings. The junior member has the right to share her own experience, and her experience is what your research needs.',
+      C: 'Accept both. Go to Cadence’s session and also keep the junior member’s recordings. Triangulate.',
+      D: 'Decline both. Write about what your inability to access either kind of data shows about Kaia research ethics.'
+    }
+  }
+};
+
+const PART1_RECAP = {
+  beaver: {
+    A: 'You ran the dam-speech interface first and built a baseline before walking anywhere.',
+    B: 'You walked the watershed with Marie Halloran first, before turning to the instruments.',
+    C: 'You set up sensor arrays across all seven downstream colonies in the first three weeks.',
+    D: 'You watched Colony Alpha for a week without measuring anything.'
+  },
+  kaia: {
+    A: 'You told Cadence-of-Formal-Silence you did not know what your name carried in her sense, and asked her to explain hers.',
+    B: 'You offered the formal Earth biography you had prepared.',
+    C: 'You stayed silent in the way Cadence had asked, then attempted a resonance answer in her register.',
+    D: 'You apologised at the first session and offered to come back to the question later.'
+  }
+};
+
+const PART2_RECAP = {
+  beaver: {
+    A: 'Then, after the flood at Colony Three, you recommended pausing the aid program.',
+    B: 'Then, after the flood at Colony Three, you proposed an adaptive-monitoring fix and kept the program running.',
+    C: 'Then, after the flood at Colony Three, you co-designed new aid criteria with Marie Halloran.',
+    D: 'Then, after the flood at Colony Three, you wrote a reflexive memo about the framework’s assumptions.'
+  },
+  kaia: {
+    A: 'Then, when the junior council member offered her recordings, you refused, and accepted Cadence’s House-sanctioned session instead.',
+    B: 'Then, when the junior council member offered her recordings, you accepted them on her right to share her own experience.',
+    C: 'Then you accepted both and let Cadence decide what could be triangulated.',
+    D: 'Then you declined both, and wrote about what your inability to access either kind of data showed about Kaia research ethics.'
+  }
+};
+
+const DEBRIEFS = {
+  beaver: {
+    'A-A': `You built the baseline first, three weeks of clean readings on Colony Alpha. The data gave the pause recommendation its weight. ESSA could not argue with the cascade map. The aid program is on hold. The Sovereignty Compact will use the report against ESSA next funding cycle. The interpretive faction has not finished thanking you. Colony Three has replanted higher.`,
+    'A-B': `You built the baseline first. When the flood came, your data made the adaptive-monitoring proposal defensible. The program kept running with weekly sensor checks. Marie Halloran read your report twice and said you had kept ESSA in the watershed. What she did not say, you heard anyway. The watershed was still being measured by ESSA's instruments rather than spoken to in its own language.`,
+    'A-C': `Your baseline made the case. Marie Halloran's hand on the redesign made the criteria fit the place. The new aid criteria measure water-rights between colonies. ESSA adopted them more slowly than you wanted and more fully than you expected. Colony Three has rebuilt. Colony One, who had refused ESSA-supplied timber from the start, now sits on the consultation panel that approves new aid proposals.`,
+    'A-D': `Your baseline gave the memo evidence to lean on. The memo spelled out what the evaluation framework had measured and what it had treated as assumption. It circulated inside ESSA without changing the program in the short term. Marie Halloran kept a copy. Three years on, a new evaluation team at Birch-9 used the memo as a starting point. The aid criteria are now built around inter-colony coordination.`,
+    'B-A': `You walked the watershed with Marie Halloran first. She showed you the silt layers at the riffle, the way Colony Three's canal connected to the forest, the food cache placement that depended on a steady water level. When the flood came, you already knew what you were looking at. Your pause recommendation came with Marie's signature. ESSA accepted it. Colony Three has replanted higher.`,
+    'B-B': `You walked the watershed with Marie Halloran first, and her sense of the place shaped what you would later look at with instruments. When the flood came, your adaptive-monitoring proposal carried the kind of language ESSA accepts and Marie's understanding underneath. The program continued, with a monitoring fix that has caught two further cascade events since. Marie did not object to the framing. She also did not endorse it.`,
+    'B-C': `You walked the watershed with Marie Halloran first, and the conversation never quite stopped. When the flood came, the redesign was already half-built between you. The new aid criteria carry her teaching alongside the structural metrics. ESSA adopted them. Colony Three has rebuilt. Marie's grand-niece is starting a master's at Birch-9 next year, partly because of what she heard about how the report was written.`,
+    'B-D': `You walked the watershed with Marie Halloran first, and the relationship gave the reflexive memo unusual weight. The memo spelled out what the evaluation framework had assumed and what Marie had been showing you the whole time. It travelled through ESSA more slowly than a program change but more durably. The next cohort at Birch-9 starts each four-month deployment with a week walking the watershed with Marie.`,
+    'C-A': `You set up sensor arrays across all seven downstream colonies in your first three weeks. The cascade map was the strongest the Birch-9 archive has held. When Colony Three's food cache flooded, the pause recommendation carried the weight of seven watersheds, not one. ESSA accepted it. The Sovereignty Compact filed a counter-report. Marie Halloran thanked you briefly for the comprehensiveness. More privately, she said the seven colonies had been spoken about more than spoken with.`,
+    'C-B': `Your sensor arrays gave the adaptive-monitoring framing the weight of comprehensive data. The program continued with cascade-aware checks. ESSA's hard-science faction wrote about the approach in their internal newsletter. Marie Halloran read it and said nothing, which was something. The monitoring has since caught three further cascade events before they reached the downstream colonies.`,
+    'C-C': `Your sensor arrays gave the redesign with Marie Halloran an unusually firm foundation. The new aid criteria carry both the structural cascade picture and the inter-colony water-rights framing. ESSA adopted them. The Sovereignty Compact filed a complaint. Colony Three has rebuilt. Colony One agreed for the first time to receive ESSA-supplied timber on terms the new criteria specified.`,
+    'C-D': `Your sensor arrays produced the comprehensive data that made the reflexive memo a long document. The memo set out what the framework had treated as measurable and what it had treated as background. It travelled slowly. Two years on, a new generation of evaluation tools at Birch-9 is built on what the memo identified as missing. Marie Halloran teaches an orientation module based on it.`,
+    'D-A': `You watched Colony Alpha for the first week without measuring. The watching changed where you eventually pointed the instruments. When the flood came, you recommended pausing the aid program on the strength of what you had seen, with little data behind the recommendation. ESSA's hard-science faction took longer than usual to accept it. Marie Halloran did not. Colony Three has replanted higher.`,
+    'D-B': `You watched Colony Alpha for the first week without measuring. The watching primed you for what came next. When the flood came, your adaptive-monitoring proposal was short on baseline data and rich in field intuition. ESSA accepted the proposal slowly, with caveats. The monitoring has caught one further cascade event. Marie Halloran said the watching had been the most important part.`,
+    'D-C': `You watched Colony Alpha for the first week without measuring. The watching shaped how you and Marie Halloran rebuilt the aid criteria together. The redesign carries field intuition alongside structural metrics. ESSA adopted the criteria, slowly. Colony Three has rebuilt. The next cohort at Birch-9 has been given a week of unmeasured observation as a starting protocol.`,
+    'D-D': `You watched Colony Alpha for the first week without measuring. You watched, and after the flood you watched some more, and then you wrote a memo about how the watching had moved your assumptions. The memo did not produce a program change. It produced a slower kind of change. The next two cohorts of researchers at Birch-9 are required to spend their first week without instruments. Marie Halloran runs the orientation.`
+  },
+  kaia: {
+    'A-A': `You told Cadence you did not know what your name carried in her sense, and asked her to explain hers. She did. The first session ended with you carrying a question instead of an answer, and the rest of the deployment was shaped by that. When the junior council member offered the unauthorised recordings, you refused. You went to Cadence's session instead. The data you took home was sparser than you had hoped and truer than you had expected.`,
+    'A-B': `You told Cadence you did not know what your name carried in her sense, and asked her to explain hers. The deployment carried the opening through. When the junior council member offered her recordings, you accepted them on the grounds her experience was hers to share. The data was strong. The Convergence Ethics Panel review took six months and concluded the consent question had been handled honestly even where it had been handled imperfectly.`,
+    'A-C': `You told Cadence you did not know what your name carried in her sense, and asked her to explain hers. The deployment carried the opening through. When the junior council member offered her recordings, you accepted them and also went to Cadence's session. You brought one to the other and let Cadence decide what could be triangulated. She decided more than you expected. The paper carries Cadence's account of the consent question as its central frame.`,
+    'A-D': `You told Cadence you did not know what your name carried in her sense, and asked her to explain hers. The deployment was shaped by the opening question. When both the junior council member and Cadence offered you data, you declined both. The paper you wrote is about what your inability to access either kind of data shows about Kaia research ethics. Cadence-of-Formal-Silence sent a brief note of acknowledgement.`,
+    'B-A': `You offered the Earth biography you had prepared. Cadence read it without reading it. The deployment kept the register the first session set. When the junior council member offered her recordings, you refused them, and went to Cadence's session instead. The data you took home was sparser than you had hoped and more Cadence-shaped than you had expected. The Sovereignty Compact's reviewers had no objections.`,
+    'B-B': `You offered the Earth biography you had prepared. Cadence read it without reading it. The first session set a register the rest of the deployment kept. When the junior council member offered her recordings, you accepted them on the grounds her experience was hers to share. The data was strong. The Convergence Ethics Panel review took six months. Cadence-of-Formal-Silence has not invited you to return.`,
+    'B-C': `You offered the Earth biography you had prepared. Cadence read it without reading it. The deployment carried that register. When the junior council member offered her recordings, you accepted them, and also went to Cadence's session. The triangulation produced a paper. The paper was published. The deployment has not been invited to repeat.`,
+    'B-D': `You offered the Earth biography you had prepared. Cadence read it without reading it. The deployment carried that register. When both offers came, you declined both, and wrote about the inability instead. The paper is short and well argued. The Sovereignty Compact's reviewers had no objections. Cadence-of-Formal-Silence has not invited you to return.`,
+    'C-A': `You stayed silent in the way Cadence had asked, then attempted a resonance answer in her register. It was clumsy and Cadence treated it as the start of something. When the junior council member offered her recordings, you refused them, and went to Cadence's session instead. The session produced a paper the Convergence Ethics Panel cited as exemplary. Cadence-of-Formal-Silence has invited you to a second deployment.`,
+    'C-B': `You stayed silent in the way Cadence had asked, then attempted a resonance answer in her register. The deployment carried the opening through. When the junior council member offered her recordings, you accepted them on the grounds her experience was hers to share. The Convergence Ethics Panel review took six months. Cadence has noted the deployment as one she would not repeat with you specifically.`,
+    'C-C': `You stayed silent in the way Cadence had asked, then attempted a resonance answer in her register. It was clumsy and Cadence treated it as the start of something. When you accepted both the junior council member's recordings and Cadence's parallel session, you brought one to the other and let Cadence decide what could be triangulated. She decided more than you expected.`,
+    'C-D': `You stayed silent in the way Cadence had asked, then attempted a resonance answer in her register. The deployment was tighter for it. When both offers came, you declined both, and wrote about the inability. The paper carries the resonance opening as a methodological example. Cadence-of-Formal-Silence has invited you to a second deployment, more open than the first.`,
+    'D-A': `You apologised at the first session and offered to come back to the question later. Cadence accepted the deferral. The deployment carried that opening through. When the junior council member offered her recordings, you refused them, and went to Cadence's session instead. The data you took home was sparser than the junior member's recordings would have given and more durable. The Convergence Ethics Panel review was uneventful.`,
+    'D-B': `You apologised at the first session and offered to come back to the question later. Cadence accepted the deferral. The deployment carried that opening through. When the junior council member offered her recordings, you accepted them. The data was strong. Cadence has not invited you to return. The Sovereignty Compact's reviewers were satisfied.`,
+    'D-C': `You apologised at the first session and offered to come back to the question later. Cadence accepted the deferral. The deployment carried that opening through. When both offers came, you accepted both and brought one to the other. Cadence decided what could be triangulated. The paper that came of it is solid. Cadence-of-Formal-Silence has invited you to a second deployment with a different question.`,
+    'D-D': `You apologised at the first session and offered to come back to the question later. Cadence accepted the deferral. The deployment carried that opening through. When both offers came, you declined both, and wrote about the inability. The paper is the most-cited piece in its corner of the field. Listening continues.`
+  }
+};
+
+const CLOSINGS = {
+  beaver: {
+    pre: 'The Birch-9 colonies say:',
+    line: 'The dam holds. The water moves. We will be here.'
+  },
+  kaia: {
+    pre: 'Cadence-of-Formal-Silence sends back the resonance.',
+    line: 'Listening continues. So does the work of being heard.'
+  }
+};
+
+const DEBRIEF_PLATES = {
+  beaver: {
+    img: 'beaver_debrief.png',
+    alt: 'Sunset over the Birch River. Calm water.',
+    captionTitle: 'Birch River, late autumn.',
+    captionBody: 'Sunset over the watershed at the close of the deployment. Photographic plate.'
+  },
+  kaia: {
+    img: 'kaia_debrief.png',
+    alt: 'Distant Kaia horizon. Ambient farewell.',
+    captionTitle: 'Aelion horizon, deployment’s close.',
+    captionBody: 'The Kaia diplomatic zone at last light. Ambient resonance, faintly recorded.'
+  }
+};
+
+const TRIVIA = [
+  "In 2055, the Mycelial Signal Project confirmed that forests route information at scales no individual organism could account for.",
+  "The Cetacean Sovereignty Accords, ratified in 2062, gave sperm whale pods the first political recognition a non-human Earth society had ever received.",
+  "Beavers were recognised as a non-human engineering intelligence in 2068, against fierce political opposition.",
+  "The Kaia arrived in the solar system as a scout probe in 2025, classified by Earth astronomers as an interstellar object designated 4I/SENTINEL.",
+  "Earth Social Science Academia (ESSA), headquartered in Geneva, was founded in 2088.",
+  "A standard field deployment at any frontier is four months.",
+  "The Convergence Ethics Panel reviews every mission log from the four frontiers.",
+  "The Sovereignty Compact, founded in 2034 after artificial superintelligence emerged, rejects cognitive integration with AI.",
+  "The longest known beaver dam, in Wood Buffalo National Park, is 850 metres and visible from orbital imagery.",
+  "At the Root Network frontier, researchers sometimes spend the first six weeks waiting for the network to respond to questions they submitted before arriving."
+];
+
+const STATUSES = [
+  "Researcher at Cedar-6 has submitted Part 1. Their dam-speech data cascades into your Part 2.",
+  "A second-year researcher at Resonance House Vareth has begun a parallel session.",
+  "The Convergence Ethics Panel has logged your mission so far.",
+  "A colleague at the Root Network frontier has marked a slow signal from the Mesh.",
+  "ESSA’s hard-science faction has filed an inquiry about your baseline.",
+  "ESSA’s interpretive faction has marked your scenario for case-study review.",
+  "The Sovereignty Compact has a researcher passing through your station next week."
+];
+
+/* ============================================================
+   IMAGE LOADING WITH FALLBACK
+   ============================================================ */
+function applyImage(elementId, filename, altText) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  el.dataset.alt = altText || '';
+  if (!filename) {
+    el.classList.add('no-image');
+    el.style.backgroundImage = '';
+    return;
+  }
+  const img = new Image();
+  const path = './images/' + filename;
+  img.onload = function() {
+    el.style.backgroundImage = `url('${path}')`;
+    el.classList.remove('no-image');
+  };
+  img.onerror = function() {
+    el.classList.add('no-image');
+    el.style.backgroundImage = '';
+  };
+  img.src = path;
+}
+
+function preloadStaticImages() {
+  document.querySelectorAll('[data-img]').forEach(el => {
+    const filename = el.dataset.img;
+    if (!filename) return;
+    if (el.id) return; // dynamic plates handled per-scene
+    const img = new Image();
+    img.onload = function() {
+      el.style.backgroundImage = `url('./images/${filename}')`;
+      el.classList.remove('no-image');
+    };
+    img.onerror = function() {
+      el.classList.add('no-image');
+    };
+    img.src = './images/' + filename;
+  });
+}
+
+function checkSeal() {
+  const el = document.getElementById('cover-seal');
+  if (!el) return;
+  const probe = new Image();
+  probe.onerror = function() {
+    el.classList.add('no-emblem');
+  };
+  probe.src = './images/essa_emblem.png';
+}
+
+/* ============================================================
+   SCENE NAVIGATION
+   ============================================================ */
+const PAGE_NUMBERS = {
+  'scene-landing': '000 / 008',
+  'scene-world': '001 / 008',
+  'scene-frontier-select': '002 / 008',
+  'scene-briefing': '003 / 008',
+  'scene-part1': '004 / 008',
+  'scene-intermediary': '005 / 008',
+  'scene-part2': '006 / 008',
+  'scene-debrief': '007 / 008'
+};
+
+function showScene(id) {
+  const current = document.querySelector('.scene.active');
+  if (current && current.id === id) return;
+  if (current) {
+    current.classList.remove('active');
+  }
+  const next = document.getElementById(id);
+  if (next) {
+    next.classList.add('active');
+    next.style.animation = 'none';
+    void next.offsetWidth;
+    next.style.animation = '';
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+  const folio = document.getElementById('folio-page');
+  if (folio && PAGE_NUMBERS[id]) folio.textContent = PAGE_NUMBERS[id];
+}
+
+/* ============================================================
+   HANDLERS
+   ============================================================ */
+function handleBegin() {
+  const input = document.getElementById('player-name');
+  const errorEl = document.getElementById('name-error');
+  const name = input.value.trim();
+  if (!name) {
+    errorEl.classList.add('show');
+    input.focus({ preventScroll: true });
+    return;
+  }
+  errorEl.classList.remove('show');
+  state.name = name;
+  showScene('scene-world');
+}
+
+function handleFrontierSelect(frontier) {
+  state.frontier = frontier;
+  renderBriefing();
+  showScene('scene-briefing');
+}
+
+function renderBriefing() {
+  const f = state.frontier;
+  const data = BRIEFINGS[f];
+
+  document.getElementById('briefing-section-label').textContent = data.label;
+  document.getElementById('briefing-title').textContent = data.title;
+  document.getElementById('briefing-sub').textContent = data.sub;
+
+  applyImage('briefing-plate', data.plate.img, data.plate.alt);
+  document.getElementById('briefing-caption').innerHTML = `<strong>${data.plate.captionTitle}</strong>${data.plate.captionBody}`;
+
+  const body = document.getElementById('briefing-body');
+  const paragraphs = data.body(state.name);
+  body.innerHTML = '';
+  paragraphs.forEach(p => {
+    const el = document.createElement('p');
+    el.textContent = p;
+    body.appendChild(el);
+  });
+
+  document.getElementById('briefing-pull-text').textContent = data.pullquote.text;
+  document.getElementById('briefing-pull-attr').textContent = data.pullquote.attr;
+}
+
+function renderPart1() {
+  const f = state.frontier;
+  const data = PART1[f];
+  document.getElementById('part1-title').innerHTML = data.title;
+  applyImage('part1-plate', data.plate.img, data.plate.alt);
+  document.getElementById('part1-caption').innerHTML = `<strong>${data.plate.captionTitle}</strong>${data.plate.captionBody}`;
+  document.getElementById('part1-scenario').innerHTML = `<p>${data.scenario}</p>`;
+  buildMCQ('part1-mcq', data.choices, handlePart1Choice);
+}
+
+function buildMCQ(targetId, choices, handler) {
+  const mcq = document.getElementById(targetId);
+  mcq.innerHTML = '';
+  ['A','B','C','D'].forEach(letter => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'mcq-item';
+    b.setAttribute('role', 'radio');
+    b.setAttribute('aria-checked', 'false');
+    b.setAttribute('aria-label', `Option ${letter}. ${choices[letter]}`);
+    b.innerHTML = `
+      <span class="mcq-letter">${letter}.</span>
+      <span class="mcq-text">${choices[letter]}</span>
+      <span class="mcq-arrow" aria-hidden="true">&#8594;</span>
+    `;
+    b.addEventListener('click', () => handler(letter));
+    mcq.appendChild(b);
+  });
+}
+
+function handlePart1Choice(letter) {
+  state.p1 = letter;
+  showScene('scene-intermediary');
+  startIntermediary();
+}
+
+function startIntermediary() {
+  const fill = document.getElementById('progress-fill');
+  fill.classList.remove('run');
+  void fill.offsetWidth;
+  setTimeout(() => fill.classList.add('run'), 60);
+
+  const triviaEl = document.getElementById('trivia-text');
+  const statusEl = document.getElementById('status-text');
+  const counterEl = document.getElementById('progress-counter');
+  const triviaShuffled = shuffle([...TRIVIA]);
+  const statusShuffled = shuffle([...STATUSES]);
+  let triviaIdx = 0;
+  let statusIdx = 0;
+  triviaEl.textContent = triviaShuffled[0];
+  statusEl.textContent = statusShuffled[0];
+
+  if (state.rotateInterval) clearInterval(state.rotateInterval);
+  state.rotateInterval = setInterval(() => {
+    triviaIdx = (triviaIdx + 1) % triviaShuffled.length;
+    statusIdx = (statusIdx + 1) % statusShuffled.length;
+    triviaEl.classList.add('fading');
+    statusEl.classList.add('fading');
+    setTimeout(() => {
+      triviaEl.textContent = triviaShuffled[triviaIdx];
+      statusEl.textContent = statusShuffled[statusIdx];
+      triviaEl.classList.remove('fading');
+      statusEl.classList.remove('fading');
+    }, 480);
+  }, 3300);
+
+  // Tick the counter down
+  let remaining = 10;
+  counterEl.textContent = remaining + 's';
+  if (state.countdownInterval) clearInterval(state.countdownInterval);
+  state.countdownInterval = setInterval(() => {
+    remaining -= 1;
+    if (remaining < 0) remaining = 0;
+    counterEl.textContent = remaining + 's';
+    if (remaining <= 0) {
+      clearInterval(state.countdownInterval);
+      state.countdownInterval = null;
+    }
+  }, 1000);
+
+  if (state.intermediaryTimer) clearTimeout(state.intermediaryTimer);
+  state.intermediaryTimer = setTimeout(() => {
+    clearInterval(state.rotateInterval);
+    state.rotateInterval = null;
+    if (state.countdownInterval) {
+      clearInterval(state.countdownInterval);
+      state.countdownInterval = null;
+    }
+    renderPart2();
+    showScene('scene-part2');
+  }, 10000);
+}
+
+function renderPart2() {
+  const f = state.frontier;
+  const data = PART2[f];
+  document.getElementById('part2-title').innerHTML = data.title;
+  applyImage('part2-plate', data.plate.img, data.plate.alt);
+  document.getElementById('part2-caption').innerHTML = `<strong>${data.plate.captionTitle}</strong>${data.plate.captionBody}`;
+  document.getElementById('part2-scenario').innerHTML = `<p>${data.scenario}</p>`;
+  buildMCQ('part2-mcq', data.choices, handlePart2Choice);
+}
+
+function handlePart2Choice(letter) {
+  state.p2 = letter;
+  renderDebrief();
+  showScene('scene-debrief');
+}
+
+function renderDebrief() {
+  const f = state.frontier;
+  const key = state.p1 + '-' + state.p2;
+  const text = DEBRIEFS[f][key];
+  const closing = CLOSINGS[f];
+  const plate = DEBRIEF_PLATES[f];
+
+  // Bibliographic header
+  const stationName = f === 'beaver' ? 'Birch‑9, Birch River' : 'Resonance House Aelion';
+  document.getElementById('meta-researcher').textContent = state.name;
+  document.getElementById('meta-station').textContent = stationName + ' · four months';
+  document.getElementById('meta-outcome').textContent = `FW/CV · ${f === 'beaver' ? 'B' : 'K'}/${state.p1}‑${state.p2}`;
+
+  applyImage('debrief-plate', plate.img, plate.alt);
+  document.getElementById('debrief-caption').innerHTML = `<strong>${plate.captionTitle}</strong>${plate.captionBody}`;
+
+  // Recap
+  const recap = document.getElementById('debrief-recap');
+  recap.innerHTML = `
+    <div class="recap-item">
+      <div class="recap-num">Part&nbsp;I</div>
+      <div class="recap-text">${PART1_RECAP[f][state.p1]}</div>
+    </div>
+    <div class="recap-item">
+      <div class="recap-num">Part&nbsp;II</div>
+      <div class="recap-text">${PART2_RECAP[f][state.p2]}</div>
+    </div>
+  `;
+
+  // Body prose
+  document.getElementById('debrief-prose').innerHTML = `<p>${text}</p>`;
+
+  // Closing
+  document.getElementById('closing-pre').textContent = closing.pre;
+  document.getElementById('closing-line').textContent = closing.line;
+}
+
+function handleRestart() {
+  state.name = '';
+  state.frontier = null;
+  state.p1 = null;
+  state.p2 = null;
+  if (state.intermediaryTimer) { clearTimeout(state.intermediaryTimer); state.intermediaryTimer = null; }
+  if (state.rotateInterval)   { clearInterval(state.rotateInterval);   state.rotateInterval = null; }
+  if (state.countdownInterval){ clearInterval(state.countdownInterval); state.countdownInterval = null; }
+
+  const input = document.getElementById('player-name');
+  if (input) input.value = '';
+  const errorEl = document.getElementById('name-error');
+  if (errorEl) errorEl.classList.remove('show');
+  const fill = document.getElementById('progress-fill');
+  if (fill) fill.classList.remove('run');
+  showScene('scene-landing');
+  setTimeout(() => { if (input) input.focus({ preventScroll: true }); }, 600);
+}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  preloadStaticImages();
+  checkSeal();
+
+  // Begin
+  document.getElementById('begin-btn').addEventListener('click', handleBegin);
+  document.getElementById('player-name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleBegin();
+    }
+  });
+
+  // Generic data-next
+  document.querySelectorAll('[data-next]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.next;
+      if (target === 'scene-part1') renderPart1();
+      showScene(target);
+    });
+  });
+
+  // Frontier selection
+  document.querySelectorAll('.frontier-card').forEach(card => {
+    card.addEventListener('click', () => {
+      handleFrontierSelect(card.dataset.frontier);
+    });
+  });
+
+  // Restart
+  document.getElementById('restart-btn').addEventListener('click', handleRestart);
+
+  // Focus name input on load, no scroll
+  setTimeout(() => {
+    const input = document.getElementById('player-name');
+    if (input) input.focus({ preventScroll: true });
+  }, 700);
+});
+</script>
+
+</body>
+</html>
