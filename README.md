@@ -10,7 +10,9 @@ The point is cognitive distance. A scenario about an alien species you have neve
 
 ## Try the demo first
 
-Open `demo/convergence_demo.html` in any modern browser. Type a name, pick a frontier, click through a sample two-part exam, and see one of the sixteen consequences land. The demo covers two frontiers (Beaver and Kaia) with one path each. It shows the shape of the experience without you having to imagine it.
+Play it in your browser: **[doopsinthewind.github.io/fieldwork-convergence](https://doopsinthewind.github.io/fieldwork-convergence/demo/convergence_demo.html)**. Or open `demo/convergence_demo.html` locally after cloning.
+
+Type a name, pick a frontier, click through a sample two-part exam, and see one of the sixteen consequences land. The demo covers two frontiers (Beaver and Kaia) with one path each. It shows the shape of the experience without you having to imagine it.
 
 ## What is in this repository
 
