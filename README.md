@@ -10,7 +10,7 @@ The point is cognitive distance. A scenario about an alien species you have neve
 
 ## Try the demo first
 
-Play it in your browser: **[doopsinthewind.github.io/fieldwork-convergence](https://doopsinthewind.github.io/fieldwork-convergence/demo/convergence_demo.html)**. Or open `demo/convergence_demo.html` locally after cloning.
+Play it in your browser: **[DoopsintheWind.github.io/fieldwork-convergence](https://DoopsintheWind.github.io/fieldwork-convergence/demo/convergence_demo.html)**. Or open `demo/convergence_demo.html` locally after cloning.
 
 Type a name, pick a frontier, click through a sample two-part exam, and see one of the sixteen consequences land. The demo covers two frontiers (Beaver and Kaia) with one path each. It shows the shape of the experience without you having to imagine it.
 
@@ -151,7 +151,7 @@ The four frontiers are pedagogical objects, not biology. The Kaia are invented. 
 
 ## Suggested citation
 
-> Pisareva, D. (2026). *Fieldwork: The Convergence*. CC BY 4.0. https://github.com/doopsinthewind/fieldwork-convergence
+> Pisareva, D. (2026). *Fieldwork: The Convergence*. CC BY 4.0. https://github.com/DoopsintheWind/fieldwork-convergence
 
 ## Contact
 
